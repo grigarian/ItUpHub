@@ -1,0 +1,6 @@
+@GrowSphere_HostAddress = http://localhost:8080
+
+GET {{GrowSphere_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
