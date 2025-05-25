@@ -1,0 +1,67 @@
+﻿version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=grow_sphere;User Id=postgres;Password=postgres;
+      - JwtOptions__SecretKey=9e026bc7f8f0812943b8278512fb03a5250f3f03bcdb4978e4ed5832f00928b1
+      - MinIO__Endpoint=http://minio:9000
+      - MinIO__AccessKey=minioadmin
+      - MinIO__SecretKey=minioadmin
+      - MinIO__BucketName=ituphub
+    depends_on:
+      - postgres
+      - minio
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: grow_sphere
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - app-network
+
+  seq:
+    image: datalust/seq
+    ports:
+      - "5341:5341"
+    networks:
+      - app-network
+
+volumes:
+  postgres-data:
+  minio-data:
+
+networks:
+  app-network:
+    driver: bridge

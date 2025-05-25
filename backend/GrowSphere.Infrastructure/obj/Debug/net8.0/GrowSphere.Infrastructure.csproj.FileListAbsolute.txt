@@ -1,0 +1,59 @@
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.csproj.AssemblyReference.cache
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.AssemblyInfoInputs.cache
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.AssemblyInfo.cs
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.sourcelink.json
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.deps.json
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.runtimeconfig.json
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.pdb
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Application.dll
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Domain.dll
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Application.pdb
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Domain.pdb
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphe.6CB7FA87.Up2Date
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/refint/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.pdb
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.genruntimeconfig.cache
+/Users/grigarian/RiderProjects/GrowSphere/GrowSphere.Infrastructure/obj/Debug/net8.0/ref/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.deps.json
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.runtimeconfig.json
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.pdb
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Application.dll
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Domain.dll
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Application.pdb
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Domain.pdb
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.csproj.AssemblyReference.cache
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.AssemblyInfoInputs.cache
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.AssemblyInfo.cs
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.sourcelink.json
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphe.6CB7FA87.Up2Date
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/refint/GrowSphere.Infrastructure.dll
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.pdb
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.genruntimeconfig.cache
+/Users/grigarian/RiderProjects/GrowSphere 21.44.54/GrowSphere.Infrastructure/obj/Debug/net8.0/ref/GrowSphere.Infrastructure.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.deps.json
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.runtimeconfig.json
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Infrastructure.pdb
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Application.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Domain.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Application.pdb
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/bin/Debug/net8.0/GrowSphere.Domain.pdb
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.csproj.AssemblyReference.cache
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.AssemblyInfoInputs.cache
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.AssemblyInfo.cs
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphe.6CB7FA87.Up2Date
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/refint/GrowSphere.Infrastructure.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.pdb
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.genruntimeconfig.cache
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/ref/GrowSphere.Infrastructure.dll
