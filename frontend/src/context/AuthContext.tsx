@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios";   
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getCookie } from "../utils/cookies";
 
 type Skill = {
   id: string;
@@ -36,6 +37,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const loadUser = async () => {
     if (!isInitialized) {
       try {
+        const token = getCookie('tasty-cookies');
+        if (!token) {
+          setUser(null);
+          setIsInitialized(true);
+          return;
+        }
+
         const { data } = await api.get('/user/current', { 
           withCredentials: true 
         });

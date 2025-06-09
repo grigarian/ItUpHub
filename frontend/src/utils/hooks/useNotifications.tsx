@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import toast from 'react-hot-toast';
+import { getCookie } from '../cookies';
 
 export function useNotificationHub(userId: string | null, accessToken: string | null) {
   const [notifications, setNotifications] = useState<string[]>([]);
@@ -11,7 +12,7 @@ export function useNotificationHub(userId: string | null, accessToken: string | 
 
     connection.current = new signalR.HubConnectionBuilder()
       .withUrl("http://localhost:8080/hubs/notifications", {
-    accessTokenFactory: () => localStorage.getItem("access_token") ?? ""
+    accessTokenFactory: () => getCookie('tasty-cookies') ?? ""
   })
   .build();
 

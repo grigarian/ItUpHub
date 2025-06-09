@@ -108,7 +108,7 @@ public class UserController: ControllerBase
         context.Response.Cookies.Append("tasty-cookies", token.Value, new CookieOptions {
             Secure = false,  // Разрешаем HTTP
             SameSite = SameSiteMode.None,  // Разрешаем кросс-сайтовые куки
-            HttpOnly = true,
+            HttpOnly = false,  // Разрешаем доступ из JavaScript
             Path = "/"
             // Убираем Domain, чтобы кука работала для всех доменов
         });

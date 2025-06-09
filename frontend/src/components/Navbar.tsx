@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import api from '../api/axios';
 import { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
+import { getCookie } from '../utils/cookies';
 
 type Notification = {
   id: string;
@@ -26,7 +27,7 @@ export default function Navbar() {
     if (!user) return;
     
     // Проверяем, что пользователь авторизован
-    const token = localStorage.getItem("access_token");
+    const token = getCookie('tasty-cookies');
     if (!token) return;
     
     api.get('notifications', { withCredentials: true })
@@ -54,7 +55,7 @@ export default function Navbar() {
       .withUrl(process.env.NODE_ENV === 'development' 
         ? "http://localhost:8081/hubs/notifications"
         : "/hubs/notifications", {
-        accessTokenFactory: () => localStorage.getItem("access_token") ?? ""
+        accessTokenFactory: () => getCookie('tasty-cookies') ?? ""
       })
       .withAutomaticReconnect()
       .build();

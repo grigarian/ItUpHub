@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getCookie } from '../utils/cookies';
 
 const api = axios.create({
   baseURL: process.env.NODE_ENV === 'development' 
@@ -14,7 +15,7 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
+    const token = getCookie('tasty-cookies');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,8 +33,8 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
+      // Удаляем куку при 401 ошибке
+      document.cookie = 'tasty-cookies=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
     }
     return Promise.reject(error);
   }
