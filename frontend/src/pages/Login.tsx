@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../api/axios';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -27,23 +28,22 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await axios.post('/user/login', form, { withCredentials: true });
-      const { data: userData } = await axios.get('/user/current', {
-        withCredentials: true
-      });
-
+      const { data: userData } = await api.post('/user/login', form, { withCredentials: true });
+      
       login({
         id: userData.id,
         userName: userData.userName,
         email: userData.email,
         avatar: userData.avatar ? `${userData.avatar}` : '',
         bio: userData.bio || '',
-        skills: userData.skills || []
+        skills: userData.skills || [],
+        isAdmin: false
       });
       
       toast.success('Вы успешно вошли!');
       navigate('/');
     } catch (error: unknown) {
+      console.error('Login error:', error);
       if (axios.isAxiosError(error) && error.response?.data) {
         const message = getErrorMessage(error.response.data);
         toast.error(message);

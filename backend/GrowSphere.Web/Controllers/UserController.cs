@@ -15,7 +15,7 @@ using Serilog;
 namespace GrowSphere.Web.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class UserController: ControllerBase
 {
     private readonly UserRepository _userRepository;
@@ -56,6 +56,7 @@ public class UserController: ControllerBase
             user.Email.Value,
             user.Bio.Value,
             user.ProfilePicture.Path,
+            user.IsAdmin,
             skills.Value);
         
         return Ok(userDto);
@@ -83,6 +84,7 @@ public class UserController: ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         [FromServices] UserService service,
+        [FromServices] SkillService skillService,
         [FromBody] LoginUserRequest request,
         CancellationToken cancellationToken)
     {
@@ -91,16 +93,41 @@ public class UserController: ControllerBase
         if(token.IsFailure)
             return token.Error.ToResponse();
 
+        var user = await _userRepository.GetByEmail(request.Email);
+        
+        if(user.IsFailure)
+            return user.Error.ToResponse();
+
+        var skills = await skillService.GetByUserId(user.Value.Id, cancellationToken);
+        
+        if(skills.IsFailure)
+            return skills.Error.ToResponse();
+
         var context = HttpContext;
         
-        context.Response.Cookies.Append("tasty-cookies", token.Value);
+        context.Response.Cookies.Append("tasty-cookies", token.Value, new CookieOptions {
+            Secure = false,  // Разрешаем HTTP
+            SameSite = SameSiteMode.Lax,  // Более мягкая политика
+            HttpOnly = true,
+            Path = "/",
+            Domain = "localhost"  // Добавляем домен
+        });
         
         Log.Information
         ("User {UserName} successfully login on {Time}",
             request.Email,
             DateTime.Now);
         
-        return Ok();
+        var userDto = new UserProfileDto(
+            user.Value.Id.Value,
+            user.Value.Name.Value,
+            user.Value.Email.Value,
+            user.Value.Bio.Value,
+            user.Value.ProfilePicture?.Path ?? string.Empty,
+            user.Value.IsAdmin,
+            skills.Value);
+
+        return Ok(userDto);
     }
     
     [HttpPost("logout")]
@@ -185,7 +212,8 @@ public class UserController: ControllerBase
             user.Name.Value,
             user.Email.Value,
             user.Bio.Value,
-            user.ProfilePicture.Path,
+            user.ProfilePicture?.Path ?? string.Empty,
+            user.IsAdmin,
             skills.Value);
 
         return Ok(userDto);
@@ -285,5 +313,58 @@ public class UserController: ControllerBase
         }
     }
     
-    
+    [Authorize]
+    [HttpPost("{userId}/set-admin")]
+    public async Task<IActionResult> SetUserAsAdmin(
+        Guid userId,
+        [FromServices] UserService service,
+        CancellationToken cancellationToken)
+    {
+        var currentUser = await _userRepository.GetById(_currentUserService.UserId, cancellationToken);
+        
+        //if(currentUser.IsFailure)
+        //      turn currentUser.Error.ToResponse();
+            
+        //if(!currentUser.Value.IsAdmin)
+           // return Errors.General.NotFound().ToResponse();
+            
+        var result = await service.SetUserAsAdmin(userId, cancellationToken);
+        
+        if(result.IsFailure)
+            return result.Error.ToResponse();
+        
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllUsers(
+        [FromServices] CurrentUserService service,
+        CancellationToken cancellationToken)
+    {
+        //var currentUser = await _userRepository.GetById(service.UserId, cancellationToken);
+        
+        //if(currentUser.IsFailure)
+        //    return currentUser.Error.ToResponse();
+            
+        // if(!currentUser.Value.IsAdmin)
+        //     return Forbid();
+            
+        var users = await _userRepository.GetAll(cancellationToken);
+        
+        if(users.IsFailure)
+            return users.Error.ToResponse();
+            
+        var userDtos = users.Value.Select(u => new Application.DTOs.UserProfileDto(
+            u.Id.Value,
+            u.Name.Value,
+            u.Email.Value,
+            u.Bio.Value,
+            u.ProfilePicture?.Path ?? string.Empty,
+            u.IsAdmin,
+            u.Skills.Select(s => s.Skill).ToList()
+        ));
+        
+        return Ok(userDtos);
+    }
 }

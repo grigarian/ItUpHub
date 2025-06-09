@@ -1,6 +1,4 @@
-﻿
-
-using GrowSphere.Domain.Models.UserModel;
+﻿using GrowSphere.Domain.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -55,6 +53,11 @@ namespace GrowSphere.Infrastructure.Configuration
                     .IsRequired(false)
                     .HasColumnName("bio");
             });
+
+            builder.Property(u => u.IsAdmin)
+                .IsRequired()
+                .HasDefaultValue(false)
+                .HasColumnName("is_admin");
 
             builder.HasMany(u => u.Skills)
                 .WithOne(us => us.User)

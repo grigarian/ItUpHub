@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
@@ -27,7 +27,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (showSkillModal) {
-      axios
+      api
         .get('/skill/all', { withCredentials: true })
         .then(res => setAllSkills(res.data))
         .catch(() => toast.error('Не удалось загрузить скиллы'));
@@ -43,7 +43,7 @@ export default function ProfilePage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `user/${user.id}/profile-image`,
         formData,
         {
@@ -64,7 +64,7 @@ export default function ProfilePage() {
 
   const handleSaveBio = async () => {
     try {
-      await axios.put(`/user/${user?.id}/bio`, { bio }, { withCredentials: true });
+      await api.put(`/user/${user?.id}/bio`, { bio }, { withCredentials: true });
       await refreshUser();
       toast.success('Биография обновлена');
     } catch {
@@ -76,7 +76,7 @@ export default function ProfilePage() {
     if (!user) return;
 
     try {
-      await axios.delete(`/user/${user.id}/skills/${skillId}`, {
+      await api.delete(`/user/${user.id}/skills/${skillId}`, {
         withCredentials: true
       });
       toast.success('Навык удалён');
@@ -88,7 +88,7 @@ export default function ProfilePage() {
 
   const handleAddSkill = async (skillId: string) => {
     try {
-      await axios.post(`/user/${user?.id}/skill`, { skillId }, { withCredentials: true });
+      await api.post(`/user/${user?.id}/skill`, { skillId }, { withCredentials: true });
       toast.success('Навык добавлен');
       await refreshUser();
     } catch {
@@ -109,7 +109,7 @@ export default function ProfilePage() {
             <label className="cursor-pointer block">
               <div className="w-40 h-40 rounded-full border-4 border-white shadow-lg overflow-hidden relative">
                 <img
-                  src={`user/images/${user?.avatar}`}
+                  src={`/api/user/images/${user?.avatar}`}
                   alt="Аватар"
                   className="w-full h-full object-cover"
                 />

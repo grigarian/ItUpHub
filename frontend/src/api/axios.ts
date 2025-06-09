@@ -1,10 +1,13 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
-  withCredentials: true, // если используешь куки
+  baseURL: process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:8081/api' 
+    : '/api',
+  withCredentials: true,
 });
 
-api.defaults.withCredentials = true;
+// Add response interceptor for error handling
+
 
 export default api;

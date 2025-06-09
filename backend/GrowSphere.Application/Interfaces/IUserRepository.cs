@@ -18,5 +18,6 @@ public interface IUserRepository
     Task<Result<Guid, Error>> RemoveSkill(UserId userId, SkillId skillId,ISkillRepository skillRepository ,CancellationToken cancellationToken);
     
     Task<Result<Guid, Error>> RemoveProject(UserId userId, ProjectId projectId,CancellationToken cancellationToken);
-    
+
+    Task<Result<IEnumerable<User>, Error>> GetAll(CancellationToken cancellationToken);
 }

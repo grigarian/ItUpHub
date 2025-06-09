@@ -7,4 +7,5 @@ public record UserProfileDto(Guid id,
     string Email,
     string Bio,
     string Avatar,
+    bool IsAdmin,
     IEnumerable<Skill> Skills);

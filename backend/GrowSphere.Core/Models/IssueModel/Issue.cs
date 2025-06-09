@@ -15,61 +15,117 @@ namespace GrowSphere.Domain.Models.IssueModel
         public Description Description { get; private set; } = default!;
         
         public ProjectId ProjectId { get; private set; } = default!;
+        public Project Project { get; private set; }
 
-        public UserId? AssignerUserId { get; private set; } = null;
+        public UserId AssignedUserId { get; private set; } 
+        public User AssignedUser { get; private set; }
+        
+        public UserId? AssignerUserId { get; private set; }
+        public User? AssignerUser { get; private set; }
 
-        public Picture Picture { get; private set; } 
+        public Picture Picture { get; private set; }
 
         public DateTime CompleteDate { get; private set; }
 
-        public IssueStatus Status { get; private set; } = IssueStatus.Wait;
+        public IssueStatus Status { get; private set; } = IssueStatus.Backlog;
         
-        public Project Project { get; private set; }
-        
-        public User AssignerUser { get; private set; }
+        public int Order { get; private set; }
 
         private Issue(
             IssueId issueId,
             Title title,
             Description description,
-            ProjectId projectId,
-            UserId assignerUserId,
-            Picture picture,
+            UserId? assignedUserId,
+            UserId? assignerUserId,
             DateTime completeDate,
-            IssueStatus status)
+            IssueStatus status,
+            Picture? picture,
+            int order)
             : base(issueId)
         {
             Title = title;
             Description = description;
-            ProjectId = projectId;
+            AssignedUserId = assignedUserId;
             AssignerUserId = assignerUserId;
-            Picture = picture;
             CompleteDate = completeDate;
             Status = status;
+            Picture = picture;
+            Order = order;
         }
 
         public static Result<Issue, Error> Create(IssueId id,
             Title title,
             Description description,
-            ProjectId projectId,
-            Picture picture,
             DateTime completeDate,
             IssueStatus issueStatus,
-            UserId assignerUserId = null)
+            UserId? assignedUserId = null,
+            UserId? assignerUserId = null,
+            Picture? picture = null,
+            int order = 0)
         {
-            if (completeDate <= DateTime.Now)
-                return Errors.General.ValueIsInvalid("completeDate");
+            /*if (completeDate <= DateTime.Now)
+                return Errors.General.ValueIsInvalid("completeDate");*/
 
             return new Issue(id,
                 title,
                 description,
-                projectId,
+                assignedUserId,
                 assignerUserId,
-                picture,
                 completeDate,
-                issueStatus);
+                issueStatus,
+                picture,
+                order);
+        }
+        
+        public Result<Result, Error> Update(
+            Title title,
+            Description description,
+            DateTime completeDate,
+            UserId assignedUserId)
+        {
+
+            Title = title;
+            Description = description;
+            CompleteDate = completeDate;
+            AssignedUserId = assignedUserId;
+            return Result.Success();
+        }
+        
+        public Result<Result, Error> AssignToUser(User user)
+        {
+            if (user.Id == null)
+                return Errors.General.NotFound(user.Id.Value);
+
+            AssignedUserId = user.Id;
+            AssignedUser = user;
+            return Result.Success();
         }
 
+        public Result<Result, Error> SetProject(Project project)
+        {
+            if (project.Id == null)
+                return Errors.General.NotFound(project.Id.Value);
+            
+            Project = project;
+            ProjectId = project.Id;
+
+            return Result.Success();
+        }
+
+        public Result UpdateStatus(IssueStatus newStatus)
+        {
+            Status = newStatus;
+            return Result.Success();
+        }
+        
+        public Result<Result, Error> UpdateOrder(int newOrder)
+        {
+            if (newOrder < 0)
+                return Errors.General.ValueIsInvalid("order");
+
+            Order = newOrder;
+            return Result.Success();
+        }
         
     }
 }

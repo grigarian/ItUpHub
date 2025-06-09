@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 
 type Notification = {
   id: string;
@@ -14,7 +14,7 @@ const Notifications = () => {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
-    axios.get('/notifications')
+    api.get('/notifications')
       .then(res => setNotifications(res.data))
       .catch(() => console.error('Ошибка загрузки уведомлений'));
   }, []);
@@ -24,7 +24,7 @@ const Notifications = () => {
 
     // Отметить все как прочитанные при открытии
     if (!showNotifications && unreadCount > 0) {
-      axios.post('/notifications/mark-all-read')
+      api.post('/notifications/mark-all-read')
         .then(() => {
           setNotifications(prev =>
             prev.map(n => ({ ...n, isRead: true }))

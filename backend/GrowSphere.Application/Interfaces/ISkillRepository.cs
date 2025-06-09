@@ -10,4 +10,5 @@ public interface ISkillRepository
     Task<Guid> AddSkillAsync(Skill skill, CancellationToken cancellationToken);
     Task<Result<IEnumerable<Skill>, Error>> GetAllSkillsAsync(CancellationToken cancellationToken);
     Task<Result<IEnumerable<Skill>, Error>> GetSkillsByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    Task<List<Skill>> GetSkillsForVacancyAsync(Guid projectVacancyId, CancellationToken cancellationToken = default);
 }

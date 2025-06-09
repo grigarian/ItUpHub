@@ -42,7 +42,28 @@ public class ProjectRepository : IProjectRepository
     
     public async Task<Result<IEnumerable<Project>, Error>> GetAll(CancellationToken cancellationToken)
     {
-        var projects = await _context.Projects.ToListAsync(cancellationToken);
+        var projects = await _context.Projects
+            .Include(p => p.Category)
+            .ToListAsync(cancellationToken);
+        
+        return projects;
+    }
+
+    public async Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAllWithCategories(CancellationToken cancellationToken)
+    {
+        var projects = await _context.Projects
+            .Include(p => p.Category)
+            .Select(p => new ProjectWithCategoryDto(
+                p.Id.Value,
+                p.Title.Value,
+                p.Description.Value,
+                p.Category != null ? p.Category.Title.Value : null,
+                p.Status.Value,
+                p.StartDate,
+                p.EndDate,
+                p.CreationDate
+            ))
+            .ToListAsync(cancellationToken);
         
         return projects;
     }
@@ -55,7 +76,7 @@ public class ProjectRepository : IProjectRepository
                 up.Project.Id.Value,
                 up.Project.Title.Value,
                 up.Project.Description.Value,
-                up.Project.Category.Title.Value
+                up.Project.Category != null ? up.Project.Category.Title.Value : "Без категории"
             ))
             .ToListAsync(cancellationToken);
         

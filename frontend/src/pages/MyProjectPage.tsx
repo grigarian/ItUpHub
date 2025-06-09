@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -20,7 +20,7 @@ export default function MyProjectsPage() {
   useEffect(() => {
     if (!user) return;
 
-    axios.get(`/all-titles/${user.id}`, { withCredentials: true })
+    api.get(`/project/all-titles/${user.id}`, { withCredentials: true })
       .then(res => setProjects(res.data))
       .catch(() => toast.error('Ошибка загрузки проектов'))
       .finally(() => setLoading(false));

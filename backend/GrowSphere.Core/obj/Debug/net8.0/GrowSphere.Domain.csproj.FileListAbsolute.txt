@@ -36,3 +36,4 @@
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Core/obj/Debug/net8.0/refint/GrowSphere.Domain.dll
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Core/obj/Debug/net8.0/GrowSphere.Domain.pdb
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Core/obj/Debug/net8.0/ref/GrowSphere.Domain.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Core/obj/Debug/net8.0/GrowSphere.Domain.sourcelink.json

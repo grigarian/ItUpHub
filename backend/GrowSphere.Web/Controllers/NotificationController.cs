@@ -1,54 +1,34 @@
-using GrowSphere.Application.Users;
-using GrowSphere.Infrastructure;
+using GrowSphere.Application.Interfaces;
+using GrowSphere.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GrowSphere.Web.Controllers;
 
 [ApiController]
-[Route("notifications")]
-public class NotificationsController : ControllerBase
+[Route("api/[controller]")]
+[Authorize]
+public class NotificationController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly INotificationService _notificationService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public NotificationsController(ApplicationDbContext context)
+    public NotificationController(
+        INotificationService notificationService,
+        ICurrentUserService currentUserService)
     {
-        _context = context;
+        _notificationService = notificationService;
+        _currentUserService = currentUserService;
     }
 
-    // GET /notifications
     [HttpGet]
-    public async Task<IActionResult> GetUserNotifications(
-        [FromServices] NotificationService notificationService,
-        [FromServices] CurrentUserService service)
+    public async Task<IActionResult> GetNotifications(CancellationToken cancellationToken)
     {
-        var userId = service.UserId;
-        
-        var notifications = await notificationService.GetUserNotificationsAsync(userId);
+        var userId = _currentUserService.UserId;
+        if (userId == null || userId == Guid.Empty)
+            return Unauthorized();
 
+        var notifications = await _notificationService.GetUserNotificationsAsync(userId, cancellationToken);
         return Ok(notifications);
-    }
-
-    // POST /notifications/mark-all-read
-    [HttpPost("mark-all-read")]
-    public async Task<IActionResult> MarkAllAsRead([FromServices] CurrentUserService service)
-    {
-        var userId = service.UserId;
-
-        var unreadNotifications = await _context.Notifications
-            .Where(n => n.UserId == userId && !n.IsRead)
-            .ToListAsync();
-
-        if (!unreadNotifications.Any())
-            return Ok();
-
-        foreach (var notification in unreadNotifications)
-        {
-            notification.MarkAsRead();
-        }
-
-        await _context.SaveChangesAsync();
-
-        return Ok();
     }
 }

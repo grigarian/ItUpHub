@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
@@ -15,14 +15,14 @@ export default function AllSkills() {
   const { refreshUser } = useAuth();
 
   useEffect(() => {
-    axios.get('skill/all', { withCredentials: true })
+    api.get('skill/all', { withCredentials: true })
       .then(res => setSkills(res.data))
       .catch(() => toast.error('Не удалось загрузить скиллы'));
   }, []);
 
   const handleAddSkill = async (skillId: string) => {
     try {
-      await axios.post(`/user/${user?.id}/skill`, { skillId }, {
+      await api.post(`/user/${user?.id}/skill`, { skillId }, {
         withCredentials: true
       });
       toast.success('Скилл добавлен');

@@ -529,3 +529,4 @@
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Web/obj/Debug/net8.0/GrowSphere.Web.pdb
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Web/obj/Debug/net8.0/GrowSphere.Web.genruntimeconfig.cache
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Web/obj/Debug/net8.0/ref/GrowSphere.Web.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Web/obj/Debug/net8.0/GrowSphere.Web.sourcelink.json

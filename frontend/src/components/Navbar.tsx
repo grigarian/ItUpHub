@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 
@@ -23,52 +23,70 @@ export default function Navbar() {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
-  axios.get('/notifications')
-    .then(res => {
-      if (Array.isArray(res.data)) {
-        setNotifications(res.data);
-      } else {
-        console.error('Некорректный формат уведомлений:', res.data);
-        setNotifications([]);
-      }
-    })
-    .catch(() => console.error('Ошибка загрузки уведомлений'));
-}, []);
+    if (!user) return;
+    
+    // Проверяем, что пользователь авторизован
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+    
+    api.get('notifications', { withCredentials: true })
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          setNotifications(res.data);
+        } else {
+          console.error('Некорректный формат уведомлений:', res.data);
+          setNotifications([]);
+        }
+      })
+      .catch((error) => {
+        console.error('Ошибка загрузки уведомлений:', error);
+        if (error.response?.status !== 401) {
+          toast.error('Ошибка загрузки уведомлений');
+        }
+      });
+  }, [user]);
   
 
   useEffect(() => {
-  if (!user) return; // Ждём, пока userId загрузится
+    if (!user) return;
 
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:8080/hubs/notifications", {
-    accessTokenFactory: () => localStorage.getItem("access_token") ?? ""
-  })
-  .build();
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(process.env.NODE_ENV === 'development' 
+        ? "http://localhost:8081/hubs/notifications"
+        : "/hubs/notifications", {
+        accessTokenFactory: () => localStorage.getItem("access_token") ?? ""
+      })
+      .withAutomaticReconnect()
+      .build();
 
-  connection.start().catch(err => console.error('Ошибка подключения SignalR:', err));
+    connection.start()
+      .then(() => console.log('SignalR Connected'))
+      .catch(err => {
+        console.error('Ошибка подключения SignalR:', err);
+        toast.error('Ошибка подключения к уведомлениям');
+      });
 
-  connection.on('ReceiveNotification', (message: string) => {
-  const notification = {
-    id: crypto.randomUUID(),
-    message,
-    createdAt: new Date().toISOString(),
-    isRead: false
-  };
-  setNotifications(prev => [notification, ...prev]);
-  console.log(message);
-  toast(message);
-});
+    connection.on('ReceiveNotification', (message: string) => {
+      const notification = {
+        id: crypto.randomUUID(),
+        message,
+        createdAt: new Date().toISOString(),
+        isRead: false
+      };
+      setNotifications(prev => [notification, ...prev]);
+      toast(message);
+    });
 
-  return () => {
-    connection.stop();
-  };
-}, [user]); 
+    return () => {
+      connection.stop();
+    };
+  }, [user]);
 
   const handleToggleNotifications = () => {
     setShowNotifications(prev => !prev);
 
     if (!showNotifications && unreadCount > 0) {
-      axios.post('/notifications/mark-all-read')
+      api.post('/notifications/mark-all-read')
         .then(() => {
           setNotifications(prev =>
             prev.map(n => ({ ...n, isRead: true }))
@@ -104,11 +122,34 @@ export default function Navbar() {
           {user ? (
             <>
               <Link
+                to="/projects"
+                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg font-medium transition-colors"
+              >
+                Проекты
+              </Link>
+              <Link
                 to="/my-projects"
                 className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg font-medium transition-colors"
               >
                 Мои проекты
               </Link>
+
+              {user.isAdmin && (
+                <>
+                  <Link
+                    to="/admin"
+                    className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Админ панель
+                  </Link>
+                  <Link
+                    to="/admin/users"
+                    className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-lg font-medium transition-colors"
+                  >
+                    Пользователи
+                  </Link>
+                </>
+              )}
 
               {/* Уведомления */}
               <div className="relative">
@@ -168,7 +209,7 @@ export default function Navbar() {
               >
                 {user.avatar ? (
                   <img
-                    src={`/user/images/${user.avatar}`}
+                    src={`/api/user/images/${user.avatar}`}
                     alt="Аватар"
                     className="w-9 h-9 rounded-full border-2 border-white shadow object-cover"
                   />
@@ -200,6 +241,12 @@ export default function Navbar() {
             </>
           ) : (
             <div className="flex items-center gap-4">
+              <Link
+                to="/terms"
+                className="px-3 py-2 text-gray-600 hover:text-indigo-600 font-medium transition-colors text-sm"
+              >
+                Условия
+              </Link>
               <Link
                 to="/login"
                 className="px-4 py-2 text-gray-700 hover:text-indigo-600 font-medium transition-colors"

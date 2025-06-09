@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/axios";   
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 type Skill = {
   id: string;
@@ -14,6 +15,7 @@ type User = {
   avatar: string;
   bio: string;
   skills: Skill[];
+  isAdmin: boolean;
 };
 
 type AuthContextType = {
@@ -25,29 +27,29 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-axios.defaults.withCredentials = true;
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const navigate = useNavigate();
-  /*const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' 
-    ? 'http://localhost:3000/api' 
-    : '/api',
-  withCredentials: true,
-});*/
-console.log('Текущий пользователь:', user);
+
   const loadUser = async () => {
-    try {
-      const { data } = await axios.get('/user/current', { 
-        withCredentials: true 
-      });
-      setUser(mapUserResponseToUser(data));
-    } catch (error) {
-      setUser(null);
-    } finally {
-      setIsInitialized(true);
+    if (!isInitialized) {
+      try {
+        const { data } = await api.get('/user/current', { 
+          withCredentials: true 
+        });
+        setUser(mapUserResponseToUser(data));
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          setUser(null);
+        } else {
+          console.error('Ошибка при загрузке пользователя:', error);
+          setUser(null);
+        }
+      } finally {
+        setIsInitialized(true);
+      }
     }
   };
 
@@ -66,29 +68,30 @@ console.log('Текущий пользователь:', user);
       : '/default-avatar.png',
     bio: data.bio || '',
     skills: data.skills || [],
+    isAdmin: data.isAdmin || false,
   });
 
   async function refreshUser() {
     try {
-      const { data } = await axios.get('/user/current', { withCredentials: true });
+      const { data } = await api.get('/user/current', { withCredentials: true });
       setUser(mapUserResponseToUser(data));
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Ошибка при обновлении пользователя:', error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setUser(null);
+      }
     }
   }
 
   const logout = async () => {
     try {
-      // 1. Отправляем запрос на бэкенд для выхода
-      await axios.post("/user/logout", {}, { 
+      await api.post("/user/logout", {}, { 
         withCredentials: true 
       });
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      // 2. Очищаем состояние в любом случае
       setUser(null);
-      // 3. Перенаправляем на главную
       navigate("/");
     }
   };
@@ -108,7 +111,6 @@ console.log('Текущий пользователь:', user);
   );
 };
 
-// Убедись, что хук экспортируется как именованный экспорт
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

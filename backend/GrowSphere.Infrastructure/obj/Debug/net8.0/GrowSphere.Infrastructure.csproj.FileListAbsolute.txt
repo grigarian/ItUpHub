@@ -57,3 +57,4 @@
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.pdb
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.genruntimeconfig.cache
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/ref/GrowSphere.Infrastructure.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Infrastructure/obj/Debug/net8.0/GrowSphere.Infrastructure.sourcelink.json

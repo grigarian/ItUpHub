@@ -11,8 +11,7 @@ using Serilog;
 namespace GrowSphere.Web.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-[Authorize]
+[Route("api/[controller]")]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepository;
@@ -22,6 +21,7 @@ public class ProjectController : ControllerBase
         _projectRepository = projectRepository;
     }
 
+    [Authorize]
     [HttpPost("create")]
     public async Task<ActionResult<Guid>> Create(
         [FromServices] ProjectService service,
@@ -60,6 +60,7 @@ public class ProjectController : ControllerBase
         return Ok(project.Value);
     }
 
+    [Authorize]
     [HttpPut("{id:guid}/update")]
     public async Task<ActionResult> Update(
         Guid id,
@@ -75,8 +76,7 @@ public class ProjectController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
-    [HttpGet("/all")]
+    [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<Project>>> All(
         [FromServices] ProjectService service,
         CancellationToken cancellationToken)
@@ -88,9 +88,22 @@ public class ProjectController : ControllerBase
         
         return Ok(projects.Value);
     }
+
+    [HttpGet("all-with-categories")]
+    public async Task<ActionResult<IEnumerable<ProjectWithCategoryDto>>> AllWithCategories(
+        [FromServices] ProjectService service,
+        CancellationToken cancellationToken)
+    {
+        var projects = await service.GetAllWithCategories(cancellationToken);
+        
+        if(projects.IsFailure)
+            return projects.Error.ToResponse();
+        
+        return Ok(projects.Value);
+    }
     
     [Authorize]
-    [HttpGet("/all/{userId:guid}")]
+    [HttpGet("all/{userId:guid}")]
     public async Task<ActionResult<IEnumerable<Project>>> AllByUserId(
         Guid userId,
         [FromServices] ProjectService service,
@@ -105,7 +118,7 @@ public class ProjectController : ControllerBase
     }
     
     [Authorize]
-    [HttpGet("/all-titles/{userId:guid}")]
+    [HttpGet("all-titles/{userId:guid}")]
     public async Task<ActionResult<IEnumerable<ProjectListItemDto>>> AllTitlesByUserId(
         Guid userId,
         [FromServices] ProjectService service,
@@ -117,5 +130,19 @@ public class ProjectController : ControllerBase
             return projects.Error.ToResponse();
         
         return Ok(projects.Value);
+    }
+
+    [Authorize]
+    [HttpGet("{projectId:guid}/members")]
+    public async Task<ActionResult<IEnumerable<ProjectMemberDto>>> Members(
+        Guid projectId,
+        [FromServices] ProjectService service,
+        CancellationToken cancellationToken)
+    {
+        var members = await service.GetMembers(projectId, cancellationToken);
+        if(members.IsFailure)
+            return members.Error.ToResponse();
+        
+        return Ok(members.Value);
     }
 }

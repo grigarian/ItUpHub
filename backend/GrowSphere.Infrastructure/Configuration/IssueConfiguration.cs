@@ -1,5 +1,7 @@
 using GrowSphere.Domain.Models.IssueModel;
+using GrowSphere.Domain.Models.ProjectModel;
 using GrowSphere.Domain.Models.Share;
+using GrowSphere.Domain.Models.UserModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -18,6 +20,41 @@ public class IssueConfiguration : IEntityTypeConfiguration<Issue>
             .HasConversion(
                 id => id.Value,
                 value => IssueId.Create(value));
+        
+        builder.Property(i => i.AssignerUserId)
+            .HasConversion(
+                id => id.Value,
+                value => UserId.Create(value))
+            .HasColumnName("assigner_user_id")
+            .IsRequired(false);
+        
+        builder.HasOne(i => i.AssignerUser)
+            .WithMany()
+            .HasForeignKey(i => i.AssignerUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
+        builder.Property(i => i.AssignedUserId)
+            .HasConversion(
+                id => id.Value,
+                value => UserId.Create(value))
+            .HasColumnName("assigned_to_user_id")
+            .IsRequired(false);
+
+        builder.HasOne(i => i.AssignedUser)
+            .WithMany()
+            .HasForeignKey(i => i.AssignedUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
+        builder.Property(i => i.ProjectId)
+            .HasConversion(
+                id => id.Value,
+                value => ProjectId.Create(value))
+            .HasColumnName("project_id");
+        
+        builder.HasOne(i => i.Project)
+            .WithMany(p => p.Issues)
+            .HasForeignKey(i => i.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.ComplexProperty(i => i.Title, t =>
         {
@@ -56,9 +93,8 @@ public class IssueConfiguration : IEntityTypeConfiguration<Issue>
                 .HasColumnName("status");
         });
         
-        builder.HasOne(i => i.AssignerUser)
-            .WithMany()
-            .HasForeignKey(i => i.AssignerUserId)
-            .OnDelete(DeleteBehavior.SetNull);
+        builder.Property(i => i.Order)
+            .HasColumnName("order")
+            .IsRequired();
     }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-hot-toast';
 
 type UserProfile = {
@@ -26,7 +26,7 @@ export default function ProfileEdit({ initialProfile, onSave, onCancel }: Profil
     setLoading(true);
 
     try {
-      await axios.put('/user/profile', form, { withCredentials: true });
+      await api.put('/user/profile', form, { withCredentials: true });
       toast.success('Профиль обновлен');
       onSave(form); // Передаем обновленные данные наверх
     } catch (error) {

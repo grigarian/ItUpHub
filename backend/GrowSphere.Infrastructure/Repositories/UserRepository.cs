@@ -114,4 +114,14 @@ public class UserRepository : IUserRepository
 
         return userProject.ProjectId.Value;
     }
+
+    public async Task<Result<IEnumerable<User>, Error>> GetAll(CancellationToken cancellationToken)
+    {
+        var users = await _context.Users
+            .Include(u => u.Skills)
+                .ThenInclude(s => s.Skill)
+            .ToListAsync(cancellationToken);
+            
+        return users;
+    }
 }

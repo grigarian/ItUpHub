@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -26,7 +26,7 @@ export default function ProfileEditPage() {
 
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`/user/profile/${user.id}`, { withCredentials: true });
+        const res = await api.get(`/user/profile/${user.id}`, { withCredentials: true });
         setProfile({
           bio: res.data.bio || '',
           picture: res.data.picture || '',
@@ -57,7 +57,7 @@ export default function ProfileEditPage() {
     setSaving(true);
 
     try {
-      await axios.put('/user/profile', profile, { withCredentials: true });
+      await api.put('/user/profile', profile, { withCredentials: true });
       toast.success('Профиль успешно обновлён');
       navigate('/profile');
     } catch (error) {

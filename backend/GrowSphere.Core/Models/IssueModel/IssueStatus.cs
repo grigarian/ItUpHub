@@ -3,16 +3,14 @@ using GrowSphere.Core;
 
 namespace GrowSphere.Domain.Models.IssueModel
 {
-    public record IssueStatus
+    public class IssueStatus : ValueObject
     {
-        public static readonly IssueStatus InWork = new(nameof(InWork));
-        public static readonly IssueStatus Completed = new(nameof(Completed));
-        public static readonly IssueStatus Cancelled = new(nameof(Cancelled));
-        public static readonly IssueStatus Expired = new(nameof(Expired));
-        public static readonly IssueStatus Wait = new(nameof(Wait));
-
-        private static readonly IssueStatus[] _all = { InWork, Completed, Cancelled, Expired, Wait };
-
+        public static readonly IssueStatus Backlog = new("Backlog");
+        public static readonly IssueStatus ToDo = new("ToDo");
+        public static readonly IssueStatus InProgress = new("InProgress");
+        public static readonly IssueStatus Review = new("Review");
+        public static readonly IssueStatus Done = new("Done");
+        
         public string Value { get; }
 
         private IssueStatus(string value)
@@ -20,15 +18,22 @@ namespace GrowSphere.Domain.Models.IssueModel
             Value = value;
         }
 
-        public static Result<IssueStatus, Error> Create(string value)
+        public static Result<IssueStatus, Error> FromString(string value) =>
+            value switch
+            {
+                "Backlog" => Backlog,
+                "ToDo" => ToDo,
+                "InProgress" => InProgress,
+                "Review" => Review,
+                "Done" => Done,
+                _ => Errors.General.ValueIsInvalid("issue_status")
+            };
+        
+        protected override IEnumerable<IComparable> GetEqualityComponents()
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return Errors.General.ValueIsRequired("issue_status");
-
-            if (_all.Any(l => l.Value.ToLower() == value.Trim().ToLower()) == false)
-                return Errors.General.ValueIsInvalid("issue_status");
-
-            return new IssueStatus(value);
+            yield return Value;
         }
+        
+        public override string ToString() => Value;
     }
 }

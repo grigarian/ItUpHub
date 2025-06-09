@@ -45,3 +45,4 @@
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Application/obj/Debug/net8.0/refint/GrowSphere.Application.dll
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Application/obj/Debug/net8.0/GrowSphere.Application.pdb
 /Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Application/obj/Debug/net8.0/ref/GrowSphere.Application.dll
+/Users/grigarian/Documents/ItUpHub/backend/GrowSphere.Application/obj/Debug/net8.0/GrowSphere.Application.sourcelink.json

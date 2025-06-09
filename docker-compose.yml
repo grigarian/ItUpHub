@@ -11,18 +11,31 @@ services:
       - MinIO__AccessKey=minioadmin
       - MinIO__SecretKey=minioadmin
       - MinIO__BucketName=ituphub
+      - ASPNETCORE_URLS=http://+:8090
+      - CORS__AllowedOrigins=http://localhost:3000,http://localhost:8080
+    ports:
+      - "8081:8090"
     depends_on:
-      - postgres
-      - minio
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build: ./frontend
     depends_on:
       - backend
     ports:
-      - "3000:80"
+      - "8080:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8081
     networks:
       - app-network
 
@@ -34,6 +47,13 @@ services:
       POSTGRES_DB: grow_sphere
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - app-network
 

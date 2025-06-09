@@ -1,0 +1,13 @@
+node_modules/
+bin/
+obj/
+postgres-data/
+.vscode/
+.idea/
+*.user
+*.suo
+*.env
+*.env.local
+dist/
+build/
+.DS_Store

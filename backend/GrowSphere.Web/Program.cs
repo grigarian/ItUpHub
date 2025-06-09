@@ -1,9 +1,12 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Amazon.S3;
 using GrowSphere.Application.Categories;
 using GrowSphere.Application.Interfaces;
 using GrowSphere.Application.Interfaces.Auth;
+using GrowSphere.Application.Issues;
 using GrowSphere.Application.Projects;
+using GrowSphere.Application.ProjectVacancies;
 using GrowSphere.Application.Skills;
 using GrowSphere.Application.Users;
 using GrowSphere.Domain.Interfaces;
@@ -15,12 +18,13 @@ using GrowSphere.Infrastructure.Repositories;
 using GrowSphere.Infrastructure.Services;
 using GrowSphere.Web.RealTime;
 using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.WebHost.UseUrls("http://+:8080");
+builder.WebHost.UseUrls("http://+:8090");
 
 // Add services to the container.
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
@@ -46,7 +50,12 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
 
 builder.Services.AddApiAuthentication(Options.Create(jwtOptions));
 
-builder.Services.AddControllers();
+// Program.cs или Startup.cs
+builder.Services.AddControllers()
+    .AddJsonOptions(options => 
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddScoped<ApplicationDbContext>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -82,9 +91,11 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
 builder.Services.AddScoped<JoinRequestService>();
-
-
-
+builder.Services.AddScoped<IIssueRepository, IssueRepository>();
+builder.Services.AddScoped<IssueService>();
+builder.Services.AddScoped<IProjectVacancyRepository, ProjectVacancyRepository>();
+builder.Services.AddScoped<IVacancyApplicationRepository, VacancyApplicationRepository>();
+builder.Services.AddScoped<ProjectVacancyService>();
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -98,15 +109,21 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "http://localhost:8080", "http://localhost:8081")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
         });
 });
 
-
 var app = builder.Build();
+
+// Применяем миграции
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
 app.UseCors("AllowFrontend");
 
@@ -125,9 +142,10 @@ app.UseHttpsRedirection();
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Lax, // вернуть Strict
+    MinimumSameSitePolicy = SameSiteMode.Lax,
     HttpOnly = HttpOnlyPolicy.Always,
-    Secure = CookieSecurePolicy.None //вернуть Always
+    Secure = CookieSecurePolicy.None,  // Разрешаем HTTP
+    CheckConsentNeeded = context => false // Отключаем проверку согласия
 });
 
 
@@ -141,7 +159,9 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
+
 app.MapControllers();
+app.MapHub<ProjectMessageHub>("/hubs/projectMessage");
 app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();

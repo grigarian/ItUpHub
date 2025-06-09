@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Loader2, Calendar, X } from 'lucide-react';
@@ -22,7 +22,7 @@ export default function CreateProjectPage() {
 
   useEffect(() => {
     setIsCategoriesLoading(true);
-    axios.get('category/all')
+    api.get('category/all')
       .then(res => setCategories(res.data))
       .catch(() => toast.error('Ошибка загрузки категорий'))
       .finally(() => setIsCategoriesLoading(false));
@@ -33,7 +33,7 @@ export default function CreateProjectPage() {
     setIsLoading(true);
 
     try {
-      await axios.post('/project/create', {
+      await api.post('/project/create', {
         title,
         description,
         categoryId,

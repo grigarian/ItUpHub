@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios';
 import { toast } from 'react-hot-toast';
 
 type Skill = {
@@ -23,7 +23,7 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`/user/${userId}`)
+    api.get(`/user/${userId}`)
       .then(res => setUser(res.data))
       .catch(() => toast.error('Не удалось загрузить пользователя'))
       .finally(() => setLoading(false));
@@ -36,7 +36,7 @@ export default function UserProfilePage() {
     <div className="max-w-3xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
       <div className="flex items-start gap-8">
         <img
-          src={`/user/images/${user.avatar}`}
+          src={`/api/user/images/${user.avatar}`}
           alt="Аватар"
           className="w-40 h-40 rounded-full border-4 border-gray-200 object-cover"
         />

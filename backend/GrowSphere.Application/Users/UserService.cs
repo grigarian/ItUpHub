@@ -268,6 +268,20 @@ public class UserService
         return await _userRepository.RemoveProject(userIdObj, projectIdObj, cancellationToken);
     }
 
+    public async Task<Result<User, Error>> SetUserAsAdmin(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await _userRepository.GetById(userId, cancellationToken);
+        
+        if(user.IsFailure)
+            return user.Error;
+            
+        user.Value.SetAsAdmin();
+        
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        return user.Value;
+    }
+
     private bool PasswordIsValid(string password)
     {
         int minLenght = 8;
@@ -280,5 +294,16 @@ public class UserService
         return false;
     }
     
-    
+    private UserProfileDto MapToUserProfileDto(User user)
+    {
+        return new UserProfileDto(
+            user.Id.Value,
+            user.Name.Value,
+            user.Email.Value,
+            user.Bio.Value,
+            user.ProfilePicture?.Path ?? string.Empty,
+            user.IsAdmin,
+            user.Skills?.Select(s => s.Skill).ToList() ?? new List<Skill>()
+        );
+    }
 }

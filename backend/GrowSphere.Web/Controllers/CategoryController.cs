@@ -7,10 +7,10 @@ using Serilog;
 namespace GrowSphere.Web.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-[Authorize]
+[Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
+    [Authorize]
     [HttpPost("create")]
     public async Task<ActionResult<Guid>> Create(
         [FromServices] CategoryService service,

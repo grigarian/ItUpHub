@@ -1,14 +1,16 @@
 using GrowSphere.Application.Skills;
 using GrowSphere.Domain.Models.SkillModel;
 using GrowSphere.Extentions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GrowSphere.Web.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class SkillController : ControllerBase
 {
+    [Authorize]
     [HttpPost("add")]
     public async Task<ActionResult<Guid>> AddSkill
     (

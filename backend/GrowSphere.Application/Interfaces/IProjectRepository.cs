@@ -17,6 +17,8 @@ public interface IProjectRepository
     
     Task<Result<IEnumerable<ProjectListItemDto>, Error>> GetAllTitlesByUserId(Guid userId, CancellationToken cancellationToken);
 
+    Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAllWithCategories(CancellationToken cancellationToken);
+
     Task<Result<IEnumerable<ProjectMemberDto>, Error>> GetMembers(ProjectId projectId,
         CancellationToken cancellationToken);
     

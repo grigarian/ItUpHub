@@ -30,6 +30,8 @@ namespace GrowSphere.Domain.Models.UserModel
 
         public DateTime CreatedDate { get; private set; } = DateTime.Now;
 
+        public bool IsAdmin { get; private set; } = false;
+
         public IReadOnlyCollection<UserProject> Projects => _projects.AsReadOnly();
         
         public IReadOnlyCollection<UserSkill> Skills => _skills.AsReadOnly();
@@ -77,6 +79,8 @@ namespace GrowSphere.Domain.Models.UserModel
             
             _projects.Remove(userProject);
         }
+
+        public void SetAsAdmin() => IsAdmin = true;
 
         private User(
             UserId id,

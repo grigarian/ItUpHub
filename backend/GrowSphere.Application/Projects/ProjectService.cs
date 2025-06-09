@@ -162,18 +162,38 @@ public class ProjectService
         return projects.Value.ToList();
     }
 
+    public async Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAllWithCategories(CancellationToken cancellationToken)
+    {
+        var projects = await _projectRepository.GetAllWithCategories(cancellationToken);
+        
+        if(projects.IsFailure)
+            return projects.Error;
+        
+        return projects.Value.ToList();
+    }
+
     public async Task<Result<ProjectDto, Error>> GetById(Guid projectId, CancellationToken cancellationToken)
     {
         var projectResult = await _projectRepository.GetById(projectId, cancellationToken);
-        
-        var members = await _projectRepository.GetMembers(ProjectId.Create(projectId), cancellationToken);
-        
-        var categoryName = await _categoryRepository.GetById(projectResult.Value.CategoryId.Value, cancellationToken);
         
         if(projectResult.IsFailure)
             return projectResult.Error;
         
         var project = projectResult.Value;
+        
+        var members = await _projectRepository.GetMembers(ProjectId.Create(projectId), cancellationToken);
+        if(members.IsFailure)
+            return members.Error;
+        
+        string categoryName = "Без категории";
+        if (project.CategoryId != null && project.CategoryId.Value != Guid.Empty)
+        {
+            var categoryResult = await _categoryRepository.GetById(project.CategoryId.Value, cancellationToken);
+            if(categoryResult.IsSuccess)
+            {
+                categoryName = categoryResult.Value.Title.Value;
+            }
+        }
         
         return new ProjectDto
         {
@@ -184,7 +204,7 @@ public class ProjectService
             StartDate = project.StartDate,
             EndDate = project.EndDate,
             CreationDate = project.CreationDate,
-            CategoryName = categoryName.Value.Title.Value,
+            CategoryName = categoryName,
             Members = members.Value.ToList()
         };
     }
@@ -212,5 +232,13 @@ public class ProjectService
         return projects.Value.ToList();
     }
 
+    public async Task<Result<IEnumerable<ProjectMemberDto>, Error>> GetMembers(Guid projectId, CancellationToken cancellationToken)
+    {
+        var members = await _projectRepository.GetMembers(ProjectId.Create(projectId), cancellationToken);
+        if(members.IsFailure)
+            return members.Error;
+        
+        return members.Value.ToList();
+    }
     
 }
