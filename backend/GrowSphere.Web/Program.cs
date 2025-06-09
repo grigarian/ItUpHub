@@ -154,7 +154,7 @@ app.UseHttpsRedirection();
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Lax,
+    MinimumSameSitePolicy = SameSiteMode.None,  // Разрешаем кросс-сайтовые куки
     HttpOnly = HttpOnlyPolicy.Always,
     Secure = CookieSecurePolicy.None,  // Разрешаем HTTP
     CheckConsentNeeded = context => false // Отключаем проверку согласия
