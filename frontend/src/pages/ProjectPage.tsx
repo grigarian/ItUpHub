@@ -184,12 +184,14 @@ export default function ProjectPage() {
             <span className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
               {statusTranslations[project.status] ?? project.status}
             </span>
-            <Link
-              to={`/projects/${project.id}/board`}
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition text-sm font-medium"
-            >
-              Доска задач
-            </Link>
+            {(isMember || user?.isAdmin) && (
+              <Link
+                to={`/projects/${project.id}/board`}
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition text-sm font-medium"
+              >
+                Доска задач
+              </Link>
+            )}
           </div>
         </div>
         

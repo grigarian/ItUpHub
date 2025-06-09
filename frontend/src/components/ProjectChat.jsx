@@ -1,29 +1,88 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import api from '../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getCookie } from '../utils/cookies';
+import { useAuth } from '../context/AuthContext';
+import { ProjectAccessInfo } from './ProjectAccessInfo';
 
 export const ProjectChat = ({ projectId }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const [isMember, setIsMember] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [projectTitle, setProjectTitle] = useState('');
   const connectionRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    api.get(`projectmessage/${projectId}/messages`, { withCredentials: true })
-      .then(res => {
-        if (Array.isArray(res.data)) {
-          setMessages(res.data.reverse());
+    const checkMembershipAndLoadMessages = async () => {
+      if (!user || !projectId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Проверяем, является ли пользователь админом
+        if (user.isAdmin) {
+          setIsMember(true);
         } else {
-          console.error('Некорректный формат сообщений:', res.data);
-          setMessages([]);
+          // Получаем список членов проекта
+          const response = await api.get(`/project/${projectId}/members`, { 
+            withCredentials: true 
+          });
+          
+          const members = response.data;
+          const userIsMember = members.some((member) => member.userId === user.id);
+          setIsMember(userIsMember);
+          
+          if (!userIsMember) {
+            // Получаем название проекта для отображения в сообщении
+            try {
+              const projectResponse = await api.get(`/project/${projectId}/get`);
+              setProjectTitle(projectResponse.data.title);
+            } catch (error) {
+              console.error('Error fetching project title:', error);
+              setProjectTitle('Проект');
+            }
+            return; // Не загружаем сообщения, если пользователь не участник
+          }
         }
-      })
-      .catch(console.error);
+
+        // Загружаем сообщения только если пользователь участник
+        if (isMember || user.isAdmin) {
+          const res = await api.get(`projectmessage/${projectId}/messages`, { withCredentials: true });
+          if (Array.isArray(res.data)) {
+            setMessages(res.data.reverse());
+          } else {
+            console.error('Некорректный формат сообщений:', res.data);
+            setMessages([]);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking membership or loading messages:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkMembershipAndLoadMessages();
+  }, [projectId, user]);
+
+  useEffect(() => {
+    if (!isMember && !user?.isAdmin) {
+      return; // Не подключаемся к SignalR, если пользователь не участник
+    }
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl(`http://localhost:8081/hubs/projectMessage?projectId=${projectId}`)
+      .withUrl(process.env.NODE_ENV === 'development' 
+        ? `http://localhost:8081/hubs/projectMessage?projectId=${projectId}`
+        : `/hubs/projectMessage?projectId=${projectId}`, {
+        accessTokenFactory: () => getCookie('tasty-cookies') ?? ""
+      })
       .withAutomaticReconnect()
       .build();
 
@@ -37,7 +96,7 @@ export const ProjectChat = ({ projectId }) => {
     return () => {
       connection.stop();
     };
-  }, [projectId]);
+  }, [projectId, isMember, user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -48,7 +107,7 @@ export const ProjectChat = ({ projectId }) => {
   }, []);
 
   const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || (!isMember && !user?.isAdmin)) return;
 
     try {
       await connectionRef.current.invoke('SendMessage', projectId, newMessage);
@@ -57,6 +116,28 @@ export const ProjectChat = ({ projectId }) => {
       console.error('Send error:', err);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="mt-8 max-w-xl w-full mx-auto rounded-xl shadow-md bg-white border border-gray-200 p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Загрузка чата...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isMember && !user?.isAdmin) {
+    return (
+      <div className="mt-8">
+        <ProjectAccessInfo 
+          projectId={projectId} 
+          projectTitle={projectTitle} 
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8 max-w-xl w-full mx-auto rounded-xl shadow-md bg-white border border-gray-200">

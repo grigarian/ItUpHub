@@ -85,15 +85,6 @@ export default function Navbar() {
 
   const handleToggleNotifications = () => {
     setShowNotifications(prev => !prev);
-
-    if (!showNotifications && unreadCount > 0) {
-      api.post('/notifications/mark-all-read')
-        .then(() => {
-          setNotifications(prev =>
-            prev.map(n => ({ ...n, isRead: true }))
-          );
-        });
-    }
   };
 
   const handleLogout = async () => {

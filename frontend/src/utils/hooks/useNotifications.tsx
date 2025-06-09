@@ -11,10 +11,12 @@ export function useNotificationHub(userId: string | null, accessToken: string | 
     if (!userId || !accessToken) return; // ждем и userId, и токен
 
     connection.current = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:8080/hubs/notifications", {
-    accessTokenFactory: () => getCookie('tasty-cookies') ?? ""
-  })
-  .build();
+      .withUrl(process.env.NODE_ENV === 'development' 
+        ? "http://localhost:8081/hubs/notifications"
+        : "/hubs/notifications", {
+        accessTokenFactory: () => getCookie('tasty-cookies') ?? ""
+      })
+      .build();
 
     connection.current
       .start()
