@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=grow_sphere;User Id=ituphub_user;Password=ituphub_password123;
+      - JwtOptions__SecretKey=ituphub_jwt_secret_key_2024_very_long_and_secure_key_for_production
+      - MinIO__Endpoint=http://minio:9000
+      - MinIO__AccessKey=ituphub_minio_user
+      - MinIO__SecretKey=ituphub_minio_secret_key_123
+      - MinIO__BucketName=ituphub
+      - ASPNETCORE_URLS=http://+:8090
+      - CORS__AllowedOrigins=http://ituphub.ru,https://ituphub.ru,http://www.ituphub.ru,https://www.ituphub.ru
+    ports:
+      - "8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ituphub_user
+      POSTGRES_PASSWORD: ituphub_password123
+      POSTGRES_DB: grow_sphere
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ituphub_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ituphub_minio_user
+      MINIO_ROOT_PASSWORD: ituphub_minio_secret_key_123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  minio-data:
+
+networks:
+  app-network:
+    driver: bridge 
