@@ -1,13 +1,45 @@
+# Dependencies
 node_modules/
 bin/
 obj/
+
+# Data
 postgres-data/
+minio-data/
+
+# IDE
 .vscode/
 .idea/
 *.user
 *.suo
+
+# Environment files
 *.env
 *.env.local
+.env.production
+.env.staging
+
+# Build outputs
 dist/
 build/
+
+# Logs
+*.log
+logs/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Backup files
+*.sql
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
