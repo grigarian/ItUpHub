@@ -109,7 +109,8 @@ public class UserController: ControllerBase
             Secure = false,  // Разрешаем HTTP
             SameSite = SameSiteMode.None,  // Разрешаем кросс-сайтовые куки
             HttpOnly = false,  // Разрешаем доступ из JavaScript
-            Path = "/"
+            Path = "/",
+            Expires = DateTime.UtcNow.AddDays(30)  // Кука будет жить 30 дней
             // Убираем Domain, чтобы кука работала для всех доменов
         });
         
@@ -134,9 +135,10 @@ public class UserController: ControllerBase
     public IActionResult Logout()
     {
         Response.Cookies.Delete("tasty-cookies", new CookieOptions {
-            Secure = true,
+            Secure = false,
             SameSite = SameSiteMode.None,
-            HttpOnly = true
+            HttpOnly = false,
+            Path = "/"
         });
     
         return Ok();
