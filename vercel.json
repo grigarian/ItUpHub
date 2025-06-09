@@ -7,12 +7,23 @@
       "config": {
         "distDir": "build"
       }
+    },
+    {
+      "src": "backend/GrowSphere.Web/GrowSphere.Web.csproj",
+      "use": "@vercel/dotnet"
     }
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/backend/GrowSphere.Web/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ]
+  ],
+  "env": {
+    "ASPNETCORE_ENVIRONMENT": "Production"
+  }
 } 

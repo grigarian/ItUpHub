@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GrowSphere.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b966007b3a4272ae02c4a48a96a404a53b4fa25f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+240ccb32e969a8bb0325cde4b757514f4cb0c0ec")]
 [assembly: System.Reflection.AssemblyProductAttribute("GrowSphere.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GrowSphere.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
