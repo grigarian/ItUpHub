@@ -105,14 +105,19 @@ public class UserController: ControllerBase
 
         var context = HttpContext;
         
+        Log.Information("Setting cookie for user {Email} with token length {TokenLength}", 
+            request.Email, token.Value.Length);
+        
         context.Response.Cookies.Append("tasty-cookies", token.Value, new CookieOptions {
             Secure = false,  // Разрешаем HTTP
-            SameSite = SameSiteMode.None,  // Разрешаем кросс-сайтовые куки
+            SameSite = SameSiteMode.Lax,  // Используем Lax для HTTP
             HttpOnly = false,  // Разрешаем доступ из JavaScript
             Path = "/",
             Expires = DateTime.UtcNow.AddDays(30)  // Кука будет жить 30 дней
             // Убираем Domain, чтобы кука работала для всех доменов
         });
+        
+        Log.Information("Cookie set successfully for user {Email}", request.Email);
         
         Log.Information
         ("User {UserName} successfully login on {Time}",
@@ -136,7 +141,7 @@ public class UserController: ControllerBase
     {
         Response.Cookies.Delete("tasty-cookies", new CookieOptions {
             Secure = false,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Lax,
             HttpOnly = false,
             Path = "/"
         });

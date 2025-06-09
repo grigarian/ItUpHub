@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../utils/errorMessages';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { getCookie, debugCookies } from '../utils/cookies';
 
 type LoginData = {
   email: string;
@@ -28,7 +29,15 @@ export default function Login() {
     setIsLoading(true);
 
     try {
+      console.log('Attempting login...');
       const { data: userData } = await api.post('/user/login', form, { withCredentials: true });
+      
+      console.log('Login successful, user data:', userData);
+      console.log('Cookies after login:');
+      debugCookies();
+      
+      const token = getCookie('tasty-cookies');
+      console.log('Token after login:', token ? 'found' : 'not found');
       
       login({
         id: userData.id,
