@@ -29,41 +29,54 @@ export const ProjectChat = ({ projectId }) => {
         // Проверяем, является ли пользователь админом
         if (user.isAdmin) {
           setIsMember(true);
-        } else {
-          // Получаем список членов проекта
-          const response = await api.get(`/project/${projectId}/members`, { 
-            withCredentials: true 
-          });
-          
-          const members = response.data;
-          const userIsMember = members.some((member) => member.userId === user.id);
-          setIsMember(userIsMember);
-          
-          if (!userIsMember) {
-            // Получаем название проекта для отображения в сообщении
-            try {
-              const projectResponse = await api.get(`/project/${projectId}/get`);
-              setProjectTitle(projectResponse.data.title);
-            } catch (error) {
-              console.error('Error fetching project title:', error);
-              setProjectTitle('Проект');
-            }
-            return; // Не загружаем сообщения, если пользователь не участник
-          }
-        }
-
-        // Загружаем сообщения только если пользователь участник
-        if (isMember || user.isAdmin) {
+          // Загружаем сообщения для админа
           const res = await api.get(`projectmessage/${projectId}/messages`, { withCredentials: true });
+          console.log('Messages response for admin:', res.data);
           if (Array.isArray(res.data)) {
             setMessages(res.data.reverse());
           } else {
             console.error('Некорректный формат сообщений:', res.data);
             setMessages([]);
           }
+          return;
+        }
+
+        // Получаем список членов проекта
+        const response = await api.get(`/project/${projectId}/members`, { 
+          withCredentials: true 
+        });
+        
+        const members = response.data;
+        console.log('Project members:', members);
+        const userIsMember = members.some((member) => member.userId === user.id);
+        console.log('User is member:', userIsMember, 'User ID:', user.id);
+        setIsMember(userIsMember);
+        
+        if (!userIsMember) {
+          // Получаем название проекта для отображения в сообщении
+          try {
+            const projectResponse = await api.get(`/project/${projectId}/get`);
+            setProjectTitle(projectResponse.data.title);
+          } catch (error) {
+            console.error('Error fetching project title:', error);
+            setProjectTitle('Проект');
+          }
+          return; // Не загружаем сообщения, если пользователь не участник
+        }
+
+        // Загружаем сообщения для участника проекта
+        const res = await api.get(`projectmessage/${projectId}/messages`, { withCredentials: true });
+        console.log('Messages response for member:', res.data);
+        if (Array.isArray(res.data)) {
+          setMessages(res.data.reverse());
+        } else {
+          console.error('Некорректный формат сообщений:', res.data);
+          setMessages([]);
         }
       } catch (error) {
         console.error('Error checking membership or loading messages:', error);
+        console.error('Error response:', error.response?.data);
+        console.error('Error status:', error.response?.status);
       } finally {
         setIsLoading(false);
       }
@@ -87,6 +100,7 @@ export const ProjectChat = ({ projectId }) => {
       .build();
 
     connection.on('ReceiveMessage', message => {
+      console.log('Received SignalR message:', message);
       setMessages(prev => [...prev, message]);
     });
 
@@ -150,7 +164,7 @@ export const ProjectChat = ({ projectId }) => {
           <div key={i} className="text-sm bg-gray-50 p-2 rounded shadow-sm">
             <div className="text-gray-600 mb-1">
               <Link
-                to={`/user/${m.sender?.id.value}`}
+                to={`/user/${m.sender?.id}`}
                 className="text-blue-600 hover:underline font-medium"
               >
                 {m.sender?.name}
