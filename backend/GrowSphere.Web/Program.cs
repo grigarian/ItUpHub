@@ -113,8 +113,12 @@ builder.Services.AddCors(options =>
                 "http://localhost:3000",
                  "http://localhost:8080",
                   "http://localhost:8081",
+                  "http://localhost:8090",
                   "https://ituphub.ru",
+                  "http://ituphub.ru",
                   "https://www.ituphub.ru",
+                  "https://www.ituphub.ru/api",
+                  "https://ituphub.ru/api",
                   "http://localhost",
                   "http://localhost:80"
                   )
