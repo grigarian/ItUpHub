@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios";   
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getCookie, debugCookies } from "../utils/cookies";
+import { getCookie } from "../utils/cookies";
 
 type Skill = {
   id: string;
@@ -37,27 +37,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const loadUser = async () => {
     if (!isInitialized) {
       try {
-        console.log('Loading user...');
-        debugCookies();
-        
         const token = getCookie('tasty-cookies');
         if (!token) {
-          console.log('No token found, user not authenticated');
           setUser(null);
           setIsInitialized(true);
           return;
         }
 
-        console.log('Token found, fetching user data...');
         const { data } = await api.get('/user/current', { 
           withCredentials: true 
         });
-        console.log('User data received:', data);
         setUser(mapUserResponseToUser(data));
       } catch (error: any) {
         console.error('Error loading user:', error);
         if (error.response?.status === 401) {
-          console.log('401 error - user not authenticated');
           setUser(null);
         } else {
           console.error('Ошибка при загрузке пользователя:', error);
@@ -79,9 +72,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     id: data.id,
     userName: data.userName,
     email: data.email,
-    avatar: data.avatar
-      ? `${data.avatar}?t=${Date.now()}`
-      : '/default-avatar.png',
+    avatar: data.avatar && data.avatar !== 'undefined' && data.avatar !== 'null'
+      ? data.avatar
+      : '',
     bio: data.bio || '',
     skills: data.skills || [],
     isAdmin: data.isAdmin || false,

@@ -30,7 +30,7 @@ export default function Navbar() {
     const token = getCookie('tasty-cookies');
     if (!token) return;
     
-    api.get('notifications', { withCredentials: true })
+    api.get('/notification', { withCredentials: true })
       .then(res => {
         if (Array.isArray(res.data)) {
           setNotifications(res.data);
@@ -208,7 +208,7 @@ export default function Navbar() {
                 to="/profile"
                 className="flex items-center space-x-2 group"
               >
-                {user.avatar ? (
+                {user.avatar && user.avatar.trim() !== '' ? (
                   <img
                     src={`/api/user/images/${user.avatar}`}
                     alt="Аватар"
