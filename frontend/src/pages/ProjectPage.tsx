@@ -64,11 +64,17 @@ export default function ProjectPage() {
     if (project) {
       return SEO_CONFIGS.project(project.title, project.description);
     }
-    return null;
+    // Дефолтная SEO-конфигурация для страницы проекта
+    return {
+      title: 'Проект | ItUpHub',
+      description: 'Описание проекта на платформе ItUpHub.',
+      keywords: 'IT проект, разработка, команда, программирование, технологии',
+      ogTitle: 'Проект | ItUpHub',
+      ogDescription: 'Описание проекта на платформе ItUpHub.',
+      ogUrl: 'https://itupHub.com/project/'
+    };
   }, [project]);
-  if (seoConfig) {
-    useSEO(seoConfig);
-  }
+  useSEO(seoConfig);
 
   useEffect(() => {
     const fetchProject = async () => {
