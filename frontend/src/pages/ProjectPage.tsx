@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/axios';
 import { toast } from 'react-hot-toast';
@@ -60,11 +60,15 @@ export default function ProjectPage() {
   const isManager = currentUserRole === 'ProjectManager';
 
   // SEO оптимизация для страницы проекта
-  useEffect(() => {
+  const seoConfig = useMemo(() => {
     if (project) {
-      useSEO(SEO_CONFIGS.project(project.title, project.description));
+      return SEO_CONFIGS.project(project.title, project.description);
     }
+    return null;
   }, [project]);
+  if (seoConfig) {
+    useSEO(seoConfig);
+  }
 
   useEffect(() => {
     const fetchProject = async () => {

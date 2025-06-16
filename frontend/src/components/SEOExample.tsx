@@ -1,5 +1,6 @@
 import React from 'react';
-import { usePageSEO } from '../utils/hooks/useSEO';
+import { useSEO } from '../utils/hooks/useSEO';
+import { SEO_CONFIGS } from '../utils/seo';
 
 /**
  * Компонент-пример для демонстрации SEO оптимизации
@@ -7,7 +8,7 @@ import { usePageSEO } from '../utils/hooks/useSEO';
  */
 export const SEOExample: React.FC = () => {
   // Пример SEO для главной страницы
-  usePageSEO.home();
+  useSEO(SEO_CONFIGS.home);
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
