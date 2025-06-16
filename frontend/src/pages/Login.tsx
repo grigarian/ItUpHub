@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getErrorMessage } from '../utils/errorMessages';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { usePageSEO } from '../utils/hooks/useSEO';
 
 type LoginData = {
   email: string;
@@ -18,6 +19,9 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // SEO оптимизация для страницы входа
+  usePageSEO.login();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

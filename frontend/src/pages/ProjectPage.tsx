@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 import CreateVacancyModal from '../components/CreateVacancyModal';
 import VacancyApplicationsModal from '../components/VacancyApplicationsModal';
+import { usePageSEO } from '../utils/hooks/useSEO';
 import {
   Project,
   Member,
@@ -56,6 +57,13 @@ export default function ProjectPage() {
   const isMember = project?.members.some(m => m.userId === user?.id);
   const currentUserRole = project?.members.find(m => m.userId === user?.id)?.role;
   const isManager = currentUserRole === 'ProjectManager';
+
+  // SEO оптимизация для страницы проекта
+  useEffect(() => {
+    if (project) {
+      usePageSEO.project(project.title, project.description);
+    }
+  }, [project]);
 
   useEffect(() => {
     const fetchProject = async () => {

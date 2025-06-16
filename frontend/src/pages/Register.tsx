@@ -12,23 +12,30 @@ import {
   CheckCircle, 
   AlertCircle,
   ArrowRight,
-  Rocket
+  Rocket,
+  Loader2
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
+import { usePageSEO } from '../utils/hooks/useSEO';
 
 type RegisterData = {
   userName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  firstName: string;
+  lastName: string;
 };
 
 export default function Register() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<RegisterData>({
     userName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    firstName: '',
+    lastName: '',
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -36,6 +43,10 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
+
+  // SEO оптимизация для страницы регистрации
+  usePageSEO.register();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));

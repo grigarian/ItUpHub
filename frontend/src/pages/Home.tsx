@@ -4,12 +4,16 @@ import api from '../api/axios';
 import { ProjectWithCategory, Skill } from '../types';
 import { Loader2, Users, Calendar, Target, Mail, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePageSEO } from '../utils/hooks/useSEO';
 
 export default function Home() {
   const { user } = useAuth();
   const [latestProjects, setLatestProjects] = useState<ProjectWithCategory[]>([]);
   const [popularSkills, setPopularSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // SEO оптимизация для главной страницы
+  usePageSEO.home();
 
   useEffect(() => {
     const fetchData = async () => {
