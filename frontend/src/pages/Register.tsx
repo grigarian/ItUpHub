@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
-import { usePageSEO } from '../utils/hooks/useSEO';
+import { useSEO } from '../utils/hooks/useSEO';
+import { SEO_CONFIGS } from '../utils/seo';
 
 type RegisterData = {
   userName: string;
@@ -46,7 +47,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   // SEO оптимизация для страницы регистрации
-  usePageSEO.register();
+  useSEO(SEO_CONFIGS.register);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));

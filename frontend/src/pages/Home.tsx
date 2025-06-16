@@ -4,7 +4,8 @@ import api from '../api/axios';
 import { ProjectWithCategory, Skill } from '../types';
 import { Loader2, Users, Calendar, Target, Mail, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { usePageSEO } from '../utils/hooks/useSEO';
+import { useSEO } from '../utils/hooks/useSEO';
+import { SEO_CONFIGS } from '../utils/seo';
 
 export default function Home() {
   const { user } = useAuth();
@@ -13,7 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   // SEO оптимизация для главной страницы
-  usePageSEO.home();
+  useSEO(SEO_CONFIGS.home);
 
   useEffect(() => {
     const fetchData = async () => {

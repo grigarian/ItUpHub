@@ -6,7 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 import CreateVacancyModal from '../components/CreateVacancyModal';
 import VacancyApplicationsModal from '../components/VacancyApplicationsModal';
-import { usePageSEO } from '../utils/hooks/useSEO';
+import { useSEO } from '../utils/hooks/useSEO';
+import { SEO_CONFIGS } from '../utils/seo';
 import {
   Project,
   Member,
@@ -61,7 +62,7 @@ export default function ProjectPage() {
   // SEO оптимизация для страницы проекта
   useEffect(() => {
     if (project) {
-      usePageSEO.project(project.title, project.description);
+      useSEO(SEO_CONFIGS.project(project.title, project.description));
     }
   }, [project]);
 

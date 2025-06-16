@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { ProjectWithCategory, Category } from '../types';
 import { Loader2, Search, Filter } from 'lucide-react';
-import { usePageSEO } from '../utils/hooks/useSEO';
+import { useSEO } from '../utils/hooks/useSEO';
+import { SEO_CONFIGS } from '../utils/seo';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<ProjectWithCategory[]>([]);
@@ -14,7 +15,7 @@ export default function ProjectsPage() {
   const [selectedStatus, setSelectedStatus] = useState('');
 
   // SEO оптимизация для страницы проектов
-  usePageSEO.projects();
+  useSEO(SEO_CONFIGS.projects);
 
   useEffect(() => {
     const fetchData = async () => {
