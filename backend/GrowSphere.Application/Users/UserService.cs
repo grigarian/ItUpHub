@@ -83,7 +83,7 @@ public class UserService
             return email.Error;
         }
 
-        var createDate = registerUserRequest.CreatedDate;
+        var createDate = DateTime.UtcNow;
         
         var user = User.Register(userId,
             userName.Value,
