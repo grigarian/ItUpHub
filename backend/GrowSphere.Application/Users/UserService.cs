@@ -94,6 +94,8 @@ public class UserService
             Picture.Empty()
             );
         
+        
+        
         if (user.IsFailure)
         {
             return user.Error;

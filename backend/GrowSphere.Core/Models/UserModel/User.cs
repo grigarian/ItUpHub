@@ -28,7 +28,7 @@ namespace GrowSphere.Domain.Models.UserModel
 
         public UserStatus UserStatus { get; private set; } = UserModel.UserStatus.Online;
 
-        public DateTime CreatedDate { get; private set; } = DateTime.Now;
+        public DateTime CreatedDate { get; private set; } = DateTime.UtcNow;
 
         public bool IsAdmin { get; private set; } = false;
 

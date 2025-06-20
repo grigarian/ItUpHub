@@ -44,7 +44,6 @@ export default function UserProfilePage() {
         <div className="flex-1 space-y-4">
           <div>
             <h2 className="text-2xl font-bold">{user.userName}</h2>
-            <p className="text-gray-600">{user.email}</p>
           </div>
 
           <div>

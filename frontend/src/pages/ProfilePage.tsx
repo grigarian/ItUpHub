@@ -137,7 +137,6 @@ export default function ProfilePage() {
         <div className="flex-1 space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{user?.userName}</h1>
-            <p className="text-lg text-gray-600 mt-1">{user?.email}</p>
           </div>
 
           <div className="space-y-4">
