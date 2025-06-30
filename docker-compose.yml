@@ -1,15 +1,13 @@
-﻿version: '3.8'
-
 services:
   backend:
     build: ./backend
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=grow_sphere;User Id=postgres;Password=postgres;
-      - JwtOptions__SecretKey=9e026bc7f8f0812943b8278512fb03a5250f3f03bcdb4978e4ed5832f00928b1
+      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=${POSTGRES_DB};User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
+      - JwtOptions__SecretKey=${JWT_SECRET_KEY}
       - MinIO__Endpoint=http://minio:9000
-      - MinIO__AccessKey=minioadmin
-      - MinIO__SecretKey=minioadmin
+      - MinIO__AccessKey=${MINIO_ROOT_USER}
+      - MinIO__SecretKey=${MINIO_ROOT_PASSWORD}
       - MinIO__BucketName=ituphub
       - ASPNETCORE_URLS=http://+:8090
       - CORS__AllowedOrigins=http://localhost:3000,http://localhost:8080
@@ -42,9 +40,9 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: grow_sphere
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
@@ -61,8 +59,8 @@ services:
     image: minio/minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"

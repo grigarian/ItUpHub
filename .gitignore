@@ -2,6 +2,8 @@
 node_modules/
 bin/
 obj/
+**/bin/
+**/obj/
 
 # Data
 postgres-data/
@@ -12,6 +14,7 @@ minio-data/
 .idea/
 *.user
 *.suo
+*.DotSettings.user
 
 # Environment files
 *.env
@@ -22,6 +25,8 @@ minio-data/
 # Build outputs
 dist/
 build/
+**/build/
+**/dist/
 
 # Logs
 *.log
@@ -29,7 +34,16 @@ logs/
 
 # OS
 .DS_Store
+**/.DS_Store
 Thumbs.db
+
+# .NET specific
+**/bin/
+**/obj/
+*.dll
+*.exe
+*.pdb
+*.cache
 
 # SSL certificates
 *.pem
@@ -43,3 +57,12 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Package managers
+package-lock.json
+yarn.lock
+
+# Runtime
+*.pid
+*.seed
+*.pid.lock
