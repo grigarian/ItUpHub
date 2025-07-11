@@ -21,14 +21,14 @@ public class NotificationController : ControllerBase
         _currentUserService = currentUserService;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetNotifications(CancellationToken cancellationToken)
+    [HttpGet("all")]
+    public async Task<IActionResult> Notifications(CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        if (userId == null || userId == Guid.Empty)
+        if (userId == null)
             return Unauthorized();
 
-        var notifications = await _notificationService.GetUserNotificationsAsync(userId, cancellationToken);
+        var notifications = await _notificationService.GetUserNotificationsAsync(userId.Value, cancellationToken);
         return Ok(notifications);
     }
 }

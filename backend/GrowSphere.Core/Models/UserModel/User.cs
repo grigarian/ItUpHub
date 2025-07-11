@@ -3,6 +3,7 @@ using GrowSphere.Core;
 using GrowSphere.Domain.Models.ProjectModel;
 using GrowSphere.Domain.Models.Share;
 using GrowSphere.Domain.Models.SkillModel;
+using GrowSphere.Domain.Models.ProjectVacancyModel;
 
 namespace GrowSphere.Domain.Models.UserModel
 {
@@ -13,6 +14,8 @@ namespace GrowSphere.Domain.Models.UserModel
         private readonly List<UserProject> _projects = [];
         
         private readonly List<UserSkill> _skills = [];
+
+        private readonly List<VacancyApplication> _vacancyApplications = new();
 
         private User(UserId id) : base(id) { }
 
@@ -35,6 +38,8 @@ namespace GrowSphere.Domain.Models.UserModel
         public IReadOnlyCollection<UserProject> Projects => _projects.AsReadOnly();
         
         public IReadOnlyCollection<UserSkill> Skills => _skills.AsReadOnly();
+        
+        public IReadOnlyCollection<VacancyApplication> VacancyApplications => _vacancyApplications.AsReadOnly();
         
         public void UpdateProfilePicture(Picture picture) => ProfilePicture = picture;
         

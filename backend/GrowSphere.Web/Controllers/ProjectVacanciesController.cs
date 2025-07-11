@@ -1,4 +1,5 @@
 using GrowSphere.Application.DTOs;
+using GrowSphere.Application.Interfaces;
 using GrowSphere.Application.ProjectVacancies;
 using GrowSphere.Application.Users;
 using GrowSphere.Domain.Models.ProjectModel;
@@ -41,11 +42,11 @@ public class ProjectVacanciesController: ControllerBase
         Guid vacancyId,
         [FromBody] ApplyToVacancyRequest request,
         [FromServices] ProjectVacancyService projectVacancyService,
-        [FromServices] CurrentUserService currentUserService,
+        [FromServices] ICurrentUserService currentUserService,
         CancellationToken cancellationToken)
     {
         var userId = currentUserService.UserId; // допустим, ты достаёшь его из токена
-        var result = await projectVacancyService.ApplyToVacancyAsync(vacancyId, userId, request.Message, cancellationToken);
+        var result = await projectVacancyService.ApplyToVacancyAsync(vacancyId, userId.Value, request.Message, cancellationToken);
 
         return result.IsSuccess
             ? Ok()

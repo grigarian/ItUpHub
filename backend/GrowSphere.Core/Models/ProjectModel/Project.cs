@@ -4,6 +4,7 @@ using GrowSphere.Domain.Models.CategoryModel;
 using GrowSphere.Domain.Models.IssueModel;
 using GrowSphere.Domain.Models.Share;
 using GrowSphere.Domain.Models.UserModel;
+using GrowSphere.Domain.Models.ProjectVacancyModel;
 
 namespace GrowSphere.Domain.Models.ProjectModel
 {
@@ -13,6 +14,8 @@ namespace GrowSphere.Domain.Models.ProjectModel
 
         private readonly List<ProjectMember> _members = [];
         
+        private readonly List<ProjectVacancy> _vacancies = new();
+
         private Project(ProjectId id) : base(id) { }
 
         public Title Title { get; private set; }
@@ -37,6 +40,8 @@ namespace GrowSphere.Domain.Models.ProjectModel
 
         public IReadOnlyCollection<ProjectMember> Members => _members.AsReadOnly();
         
+        public IReadOnlyCollection<ProjectVacancy> Vacancies => _vacancies.AsReadOnly();
+
         public void AddIssue(Issue issue) => _issues.Add(issue);
         
         public void AddCategory(Category category)
@@ -99,6 +104,8 @@ namespace GrowSphere.Domain.Models.ProjectModel
         {
             _members.Add(member);
         }
+
+        public void AddVacancy(ProjectVacancy vacancy) => _vacancies.Add(vacancy);
 
         public Result<Result, Error> ChangeTitle(string title)
         {

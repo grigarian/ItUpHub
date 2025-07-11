@@ -59,7 +59,7 @@ public class NotificationService : INotificationService
         var members = await _projectRepository.GetMembers(project.Value.Id, cancellationToken);
         
         var managerIds = members.Value
-            .Where(m => m.Role == MemberRole.ProjectManager.ToString())
+            .Where(m => m.Role == MemberRole.ProjectManager)
             .Select(m => m.UserId)
             .ToList();
 

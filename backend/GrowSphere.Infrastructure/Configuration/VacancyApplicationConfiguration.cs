@@ -1,6 +1,7 @@
 using GrowSphere.Domain.Models.ProjectVacancyModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using GrowSphere.Domain.Models.UserModel;
 
 namespace GrowSphere.Infrastructure.Configuration;
 
@@ -24,9 +25,21 @@ public class VacancyApplicationConfiguration : IEntityTypeConfiguration<VacancyA
         builder.Property(x => x.ManagerComment)
             .HasMaxLength(1000);
 
-        builder.HasOne<ProjectVacancy>()
-            .WithMany()
+        builder.Property(x => x.UserId)
+            .HasConversion(
+                id => id.Value,
+                value => UserId.Create(value));
+
+        builder.HasOne(x => x.ProjectVacancy)
+            .WithMany(v => v.VacancyApplications)
             .HasForeignKey(x => x.ProjectVacancyId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(x => x.User)
+            .WithMany(u => u.VacancyApplications)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(x => new { x.UserId, x.ProjectVacancyId }).IsUnique();
     }
 }

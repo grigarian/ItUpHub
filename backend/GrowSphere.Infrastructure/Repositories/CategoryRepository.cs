@@ -39,13 +39,9 @@ public class CategoryRepository : ICategoryRepository
         return category;
     }
 
-    public async Task<Result<IEnumerable<CategoryDto>, Error>> GetAll(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Category>, Error>> GetAll(CancellationToken cancellationToken)
     {
         var categories = await _context.Categories
-            .Select(c => new CategoryDto(
-                c.Id.Value,
-                c.Title.Value
-                ))
             .ToListAsync(cancellationToken);
         
         return categories; 

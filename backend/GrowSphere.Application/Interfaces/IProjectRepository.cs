@@ -14,12 +14,9 @@ public interface IProjectRepository
     Task<Result<IEnumerable<Project>, Error>> GetAllByUserId(Guid userId, CancellationToken cancellationToken);
     
     Task<Result<IEnumerable<Project>, Error>> GetAll(CancellationToken cancellationToken);
-    
-    Task<Result<IEnumerable<ProjectListItemDto>, Error>> GetAllTitlesByUserId(Guid userId, CancellationToken cancellationToken);
-
-    Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAllWithCategories(CancellationToken cancellationToken);
-
-    Task<Result<IEnumerable<ProjectMemberDto>, Error>> GetMembers(ProjectId projectId,
+    Task<Result<IEnumerable<Project>, Error>> GetAllWithCategories(CancellationToken cancellationToken);
+    Task<Result<IEnumerable<Project>, Error>> GetAllTitlesByUserId(Guid userId, CancellationToken cancellationToken);
+    Task<Result<IEnumerable<ProjectMember>, Error>> GetMembers(ProjectId projectId,
         CancellationToken cancellationToken);
     
     Task<Result<ProjectMember, Error>> AddMember (Guid projectId, Guid userId,MemberRole role ,CancellationToken cancellationToken);

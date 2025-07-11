@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using GrowSphere.Application.DTOs;
 using GrowSphere.Application.Interfaces;
 using GrowSphere.Core;
 using GrowSphere.Domain;
@@ -27,7 +28,7 @@ public class SkillService
             return skills.Error;
         
         var exists = skills.Value
-            .Any(s => s.Title.Value == skillRequest.title);
+            .Any(s => s.Title == skillRequest.title);
         
         if(exists)
             return Errors.General.ValueIsInvalid("Skill title already exists");
@@ -49,17 +50,17 @@ public class SkillService
         return skill.Value.Id.Value;
     }
 
-    public async Task<Result<IEnumerable<Skill>, Error>> GetAll(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<SkillDto>, Error>> GetAll(CancellationToken cancellationToken)
     {
         var skills = await _skillRepository.GetAllSkillsAsync(cancellationToken);
         
         if(skills.IsFailure)
             return skills.Error;
 
-        return skills.Value.ToList();
+        return skills.Value.Select(Mappers.SkillMapper.ToSkillDto).ToList();
     }
 
-    public async Task<Result<IEnumerable<Skill>, Error>> GetByUserId
+    public async Task<Result<IEnumerable<SkillDto>, Error>> GetByUserId
         (
             Guid id,
             CancellationToken cancellationToken
@@ -70,7 +71,7 @@ public class SkillService
         if(skills.IsFailure)
             return skills.Error;
         
-        return skills.Value.ToList();
+        return skills.Value.Select(Mappers.SkillMapper.ToSkillDto).ToList();
     }
     
     

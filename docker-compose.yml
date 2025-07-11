@@ -1,42 +1,4 @@
-services:
-  backend:
-    build: ./backend
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=${POSTGRES_DB};User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};
-      - JwtOptions__SecretKey=${JWT_SECRET_KEY}
-      - MinIO__Endpoint=http://minio:9000
-      - MinIO__AccessKey=${MINIO_ROOT_USER}
-      - MinIO__SecretKey=${MINIO_ROOT_PASSWORD}
-      - MinIO__BucketName=ituphub
-      - ASPNETCORE_URLS=http://+:8090
-      - CORS__AllowedOrigins=http://localhost:3000,http://localhost:8080
-    ports:
-      - "8081:8090"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      minio:
-        condition: service_started
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  frontend:
-    build: ./frontend
-    depends_on:
-      - backend
-    ports:
-      - "8080:80"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8081
-    networks:
-      - app-network
-
+﻿services:
   postgres:
     image: postgres:15
     environment:
@@ -60,8 +22,8 @@ services:
     image: minio/minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -70,21 +32,9 @@ services:
     networks:
       - app-network
 
-  seq:
-    image: datalust/seq
-    environment:
-      - ACCEPT_EULA=Y
-    ports:
-      - "5341:5341"
-    volumes:
-      - seq-data:/data
-    networks:
-      - app-network
-
 volumes:
   postgres-data:
   minio-data:
-  seq-data:
 
 networks:
   app-network:

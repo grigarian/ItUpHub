@@ -41,7 +41,8 @@ public class CategoryService
     public async Task<Result<IEnumerable<CategoryDto>, Error>> GetAll(CancellationToken cancellationToken)
     {
         var categories = await _categoryRepository.GetAll(cancellationToken);
-
-        return categories.Value.ToList();
+        if (categories.IsFailure)
+            return categories.Error;
+        return categories.Value.Select(Mappers.CategoryMapper.ToCategoryDto).ToList();
     }
 }

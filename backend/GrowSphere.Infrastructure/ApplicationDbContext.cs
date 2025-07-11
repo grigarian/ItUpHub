@@ -33,8 +33,6 @@ public class ApplicationDbContext(IConfiguration configuration) :DbContext
     
     public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
     
-    public DbSet<JoinRequest> JoinRequests => Set<JoinRequest>();
-    
     public DbSet<Notification> Notifications => Set<Notification>();
     
     public DbSet<ProjectMessage> ProjectMessages => Set<ProjectMessage>();

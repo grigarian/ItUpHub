@@ -10,8 +10,6 @@ public record ProjectVacancyDto(
     IReadOnlyList<VacancyApplicationDto> Applications
 );
 
-public record SkillDto(Guid Id, string Title);
-
 public record VacancyApplicationDto(
     Guid Id,
     Guid ProjectVacancyId,
