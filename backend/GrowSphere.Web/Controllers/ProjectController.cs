@@ -25,8 +25,8 @@ public class ProjectController : ControllerBase
     [HttpPost("create")]
     public async Task<ActionResult<Guid>> Create(
         [FromServices] ProjectService service,
-        [FromServices] UserService userService,
-        [FromServices] CurrentUserService currentUserService,
+        [FromServices] UserProjectService userService,
+        [FromServices] ICurrentUserService currentUserService,
         [FromBody] CreateProjectRequest request,
         CancellationToken cancellationToken)
     {
@@ -37,7 +37,7 @@ public class ProjectController : ControllerBase
         if (result.IsFailure)
             return result.Error.ToResponse();
         
-        await userService.AddProject(userid, result.Value, cancellationToken);
+        await userService.AddProject(userid.Value, result.Value, cancellationToken);
         
         Log.Information
         ("Project {Title} successfully create on {Time}",

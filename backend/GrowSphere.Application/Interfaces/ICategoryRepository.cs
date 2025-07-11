@@ -11,5 +11,5 @@ public interface ICategoryRepository
     
     Task<Result<Category, Error>> GetById(Guid id, CancellationToken cancellationToken);
     
-    Task<Result<IEnumerable<CategoryDto>, Error>> GetAll(CancellationToken cancellationToken);
+    Task<Result<IEnumerable<Category>, Error>> GetAll(CancellationToken cancellationToken);
 }

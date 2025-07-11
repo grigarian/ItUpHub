@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using GrowSphere.Core;
+using GrowSphere.Domain.Models.UserModel;
 
 namespace GrowSphere.Domain.Models.ProjectVacancyModel;
 
@@ -9,11 +10,13 @@ public class VacancyApplication
 
     public Guid Id { get; private set; }
     public Guid ProjectVacancyId { get; private set; }
-    public Guid UserId { get; private set; }
+    public UserId UserId { get; private set; }
     public string Message { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public VacancyApplicationStatus Status { get; private set; }
     public string? ManagerComment { get; private set; }
+    public User User { get; private set; }
+    public ProjectVacancy ProjectVacancy { get; private set; }
 
     public static Result<VacancyApplication, Error> Create(Guid vacancyId, Guid userId, string message)
     {
@@ -30,7 +33,7 @@ public class VacancyApplication
         {
             Id = Guid.NewGuid(),
             ProjectVacancyId = vacancyId,
-            UserId = userId,
+            UserId = UserId.Create(userId),
             Message = message.Trim(),
             CreatedAt = DateTime.UtcNow,
             Status = VacancyApplicationStatus.Pending

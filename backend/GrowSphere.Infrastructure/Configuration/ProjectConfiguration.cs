@@ -51,6 +51,11 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasForeignKey(i => i.ProjectId)
             .IsRequired();
         
+        builder.HasMany(p => p.Vacancies)
+            .WithOne(v => v.Project)
+            .HasForeignKey(v => v.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         builder.ComplexProperty(p => p.Status, s =>
         {
             s.Property(p => p.Value)

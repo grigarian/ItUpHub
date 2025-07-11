@@ -24,7 +24,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://+:8090");
+//builder.WebHost.UseUrls("http://+:8090");
 
 // Add services to the container.
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
@@ -68,16 +68,13 @@ builder.Services.AddSignalR()
     });
 
 
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<CurrentUserService>();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -89,13 +86,18 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationHub, NotificationHubSender>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<NotificationService>();
-builder.Services.AddScoped<IJoinRequestRepository, JoinRequestRepository>();
-builder.Services.AddScoped<JoinRequestService>();
 builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 builder.Services.AddScoped<IssueService>();
 builder.Services.AddScoped<IProjectVacancyRepository, ProjectVacancyRepository>();
 builder.Services.AddScoped<IVacancyApplicationRepository, VacancyApplicationRepository>();
 builder.Services.AddScoped<ProjectVacancyService>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<UserProjectService>();
+builder.Services.AddScoped<UserSkillService>();
+builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<AuthService>();
+
+
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)

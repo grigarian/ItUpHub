@@ -79,6 +79,11 @@ namespace GrowSphere.Infrastructure.Configuration
                 .WithOne(up => up.User)
                 .HasForeignKey(up => up.UserId)
                 .IsRequired(false);
+
+            builder.HasMany(u => u.VacancyApplications)
+                .WithOne(va => va.User)
+                .HasForeignKey(va => va.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

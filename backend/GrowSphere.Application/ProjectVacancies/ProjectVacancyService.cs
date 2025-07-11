@@ -7,6 +7,7 @@ using GrowSphere.Domain.Models.ProjectVacancyModel;
 using GrowSphere.Domain.Models.Share;
 using GrowSphere.Domain.Models.SkillModel;
 using GrowSphere.Domain.Models.UserModel;
+using GrowSphere.Application.Mappers;
 
 namespace GrowSphere.Application.ProjectVacancies;
 
@@ -44,8 +45,9 @@ public class ProjectVacancyService
         var titleResult = Title.Create(title);
         var descriptionResult = Description.Create(description);
         
+        
         var vacancyResult = ProjectVacancy.Create(
-            projectId,
+            ProjectId.Create(projectId),
             titleResult.Value,
             descriptionResult.Value);
         if (vacancyResult.IsFailure)
@@ -76,16 +78,8 @@ public class ProjectVacancyService
         CancellationToken cancellationToken = default)
     {
         var application = await _applicationRepository.GetByIdAsync(vacancyId, cancellationToken);
-        
-        return new VacancyApplicationDto(
-            application.Id,
-            application.ProjectVacancyId,
-            application.UserId,
-            _userRepository.GetById(application.UserId, cancellationToken).Result.Value.Name.Value,
-            application.Message,
-            application.CreatedAt.ToUniversalTime(),
-            application.Status.ToString(),
-            application.ManagerComment);
+        var user = await _userRepository.GetById(application.UserId.Value, cancellationToken);
+        return VacancyApplicationMapper.ToVacancyApplicationDto(application, user.Value.Name.Value, application.ManagerComment);
     }
 
     public async Task<Result<VacancyApplicationDto, Error>> ApplyToVacancyAsync(
@@ -94,99 +88,57 @@ public class ProjectVacancyService
         var applicationResult = VacancyApplication.Create(vacancyId, userId, message);
         if (applicationResult.IsFailure)
             return applicationResult.Error;
-
         var application = applicationResult.Value;
-        
         var vacancy = await _vacancyRepository.GetByIdAsync(vacancyId, cancellationToken);
-        
         var project = await _projectRepository.GetById(vacancy.ProjectId, cancellationToken);
-        
         var projectManager = _projectRepository
             .GetMembers(project.Value.Id, cancellationToken).Result.Value
-            .FirstOrDefault(x => x.Role == MemberRole.ProjectManager.ToString());
-        
+            .FirstOrDefault(x => x.Role == MemberRole.ProjectManager);
         await _applicationRepository.AddAsync(application, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
         await _notificationService.SendNotificationAsync(
             UserId.Create(projectManager.UserId),
             $"Новая заявка в проект: {project.Value.Title}",
             cancellationToken);
-
-        return new VacancyApplicationDto(
-            application.Id,
-            application.ProjectVacancyId,
-            application.UserId,
-            _userRepository.GetById(application.UserId, cancellationToken).Result.Value.Name.Value,
-            application.Message,
-            application.CreatedAt.ToUniversalTime(),
-            application.Status.ToString(),
-            application.ManagerComment);
+        var user = await _userRepository.GetById(application.UserId.Value, cancellationToken);
+        return VacancyApplicationMapper.ToVacancyApplicationDto(application, user.Value.Name.Value, application.ManagerComment);
     }
 
     public async Task<List<VacancyApplicationDto>> GetApplicationsForVacancyAsync(Guid vacancyId, CancellationToken cancellationToken = default)
     {
         var applications = await _applicationRepository.GetByVacancyIdAsync(vacancyId, cancellationToken);
-        
         var pendingApplications = applications
             .Where(a => a.Status == VacancyApplicationStatus.Pending)
             .ToList();
-        
-        return pendingApplications.Select(a => new VacancyApplicationDto(
-            a.Id,
-            a.ProjectVacancyId,
-            a.UserId,
-            _userRepository.GetById(a.UserId, cancellationToken).Result.Value.Name.Value,
-            a.Message,
-            a.CreatedAt.ToUniversalTime(),
-            a.Status.ToString(),
-            a.ManagerComment
-        )).ToList();
+        var result = new List<VacancyApplicationDto>();
+        foreach (var a in pendingApplications)
+        {
+            var user = await _userRepository.GetById(a.UserId.Value, cancellationToken);
+            result.Add(VacancyApplicationMapper.ToVacancyApplicationDto(a, user.Value.Name.Value, a.ManagerComment));
+        }
+        return result;
     }
 
     public async Task<List<ProjectVacancyDto>> GetAllByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default)
     {
         var vacancies = await _vacancyRepository.GetAllAsync(cancellationToken);
-        
-        
         var projectVacancies = vacancies
             .Where(x => x.ProjectId == projectId )
             .ToList();
-
         var result = new List<ProjectVacancyDto>();
-
         foreach (var vacancy in projectVacancies)
         {
-            // Получаем связанные заявки
             var applications = await _applicationRepository.GetByVacancyIdAsync(vacancy.Id, cancellationToken);
-            
             var pendingApplications = applications
                 .Where(a => a.Status == VacancyApplicationStatus.Pending)
                 .ToList();
-            
-            // Получаем связанные скиллы
             var skills = await _skillRepository.GetSkillsForVacancyAsync(vacancy.Id, cancellationToken);
-
-            result.Add(new ProjectVacancyDto(
-                vacancy.Id,
-                vacancy.ProjectId,
-                vacancy.Title.Value,
-                vacancy.Description.Value,
-                vacancy.CreatedAt.ToUniversalTime(),
-                skills.Select(s => new SkillDto(s.Id.Value, s.Title.Value)).ToList(),
-                pendingApplications.Select(a => new VacancyApplicationDto(
-                    a.Id,
-                    a.ProjectVacancyId,
-                    a.UserId,
-                    _userRepository.GetById(a.UserId, cancellationToken).Result.Value.Name.Value,
-                    a.Message,
-                    a.CreatedAt.ToUniversalTime(),
-                    a.Status.ToString(),
-                    a.ManagerComment
-                )).ToList()
+            result.Add(ProjectVacancyMapper.ToProjectVacancyDto(
+                vacancy,
+                skills,
+                pendingApplications
             ));
         }
-
         return result;
     }
 
@@ -200,11 +152,11 @@ public class ProjectVacancyService
         if (result.IsFailure)
             return Result.Failure(result.Error);
 
-        await _projectRepository.AddMember(projectId, application.UserId, role, cancellationToken);
+        await _projectRepository.AddMember(projectId, application.UserId.Value, role, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         
         await _notificationService.SendNotificationAsync(
-            UserId.Create(application.UserId),
+            UserId.Create(application.UserId.Value),
             $"Ваша заявка в проект принята! Сообщение менеджера: {comment}",
             cancellationToken);
         return Result.Success();
@@ -222,7 +174,7 @@ public class ProjectVacancyService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         await _notificationService.SendNotificationAsync(
-            UserId.Create(application.UserId),
+            UserId.Create(application.UserId.Value),
             $"Ваша заявка в проект отклонена, по причине: {comment}",
             cancellationToken);
         return Result.Success();

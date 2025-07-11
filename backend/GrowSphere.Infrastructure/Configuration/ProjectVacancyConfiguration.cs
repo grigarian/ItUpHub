@@ -1,3 +1,4 @@
+using GrowSphere.Domain.Models.ProjectModel;
 using GrowSphere.Domain.Models.ProjectVacancyModel;
 using GrowSphere.Domain.Models.Share;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,20 @@ public class ProjectVacancyConfiguration: IEntityTypeConfiguration<ProjectVacanc
             .HasForeignKey(x => x.ProjectVacancyId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        builder.HasMany(v => v.VacancyApplications)
+            .WithOne(va => va.ProjectVacancy)
+            .HasForeignKey(va => va.ProjectVacancyId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Property(p => p.ProjectId)
+            .HasConversion(
+                id => id.Value,
+                value => ProjectId.Create(value));
+        
+        builder.HasOne(v => v.Project)
+            .WithMany(p => p.Vacancies)
+            .HasForeignKey(v => v.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
         
     }
 }

@@ -49,35 +49,21 @@ public class ProjectRepository : IProjectRepository
         return projects;
     }
 
-    public async Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAllWithCategories(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Project>, Error>> GetAllWithCategories(CancellationToken cancellationToken)
     {
         var projects = await _context.Projects
             .Include(p => p.Category)
-            .Select(p => new ProjectWithCategoryDto(
-                p.Id.Value,
-                p.Title.Value,
-                p.Description.Value,
-                p.Category != null ? p.Category.Title.Value : null,
-                p.Status.Value,
-                p.StartDate,
-                p.EndDate,
-                p.CreationDate
-            ))
             .ToListAsync(cancellationToken);
         
         return projects;
     }
 
-    public async Task<Result<IEnumerable<ProjectListItemDto>, Error>> GetAllTitlesByUserId(Guid userId, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Project>, Error>> GetAllTitlesByUserId(Guid userId, CancellationToken cancellationToken)
     {
         var projects = await _context.UserProjects
             .Where(up => up.UserId == userId)
-            .Select(up => new ProjectListItemDto(
-                up.Project.Id.Value,
-                up.Project.Title.Value,
-                up.Project.Description.Value,
-                up.Project.Category != null ? up.Project.Category.Title.Value : "Без категории"
-            ))
+            .Include(up => up.Project)
+            .Select(up => up.Project)
             .ToListAsync(cancellationToken);
         
         return projects;
@@ -101,21 +87,13 @@ public class ProjectRepository : IProjectRepository
         return projects;
     }
 
-    public async Task<Result<IEnumerable<ProjectMemberDto>, Error>> GetMembers(ProjectId projectId, CancellationToken  cancellationToken)
+    public async Task<Result<IEnumerable<ProjectMember>, Error>> GetMembers(ProjectId projectId, CancellationToken  cancellationToken)
     {
-        var memberDtos = await _context.ProjectMembers
+        var members = await _context.ProjectMembers
             .Where(pm => pm.ProjectId == projectId)
             .Include(pm => pm.User)
-            .Select(pm => new ProjectMemberDto
-            {
-                UserId = pm.UserId.Value,
-                UserName = pm.User.Name.Value,
-                Role = pm.Role.ToString(),
-                PictureUrl = pm.User.ProfilePicture.Path
-            })
             .ToListAsync(cancellationToken);
-
-        return memberDtos;
+        return members;
     }
 
     

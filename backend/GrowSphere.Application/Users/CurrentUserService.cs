@@ -12,16 +12,15 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Guid UserId
+    public Guid? UserId
     {
         get
         {
             var userIdClaim = _httpContextAccessor.
-                HttpContext?.
-                User?.
-                FindFirst("userId")?.Value;
-            
-            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+                HttpContext?.User?.FindFirst("userId")?.Value;
+            if (Guid.TryParse(userIdClaim, out var userId))
+                return userId;
+            return null;
         }
     }
 }

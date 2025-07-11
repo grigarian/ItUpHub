@@ -1,4 +1,4 @@
-using GrowSphere.Domain.Models.SkillModel;
+using GrowSphere.Application.DTOs;
 
 namespace GrowSphere.Application.DTOs;
 
@@ -8,4 +8,4 @@ public record UserProfileDto(Guid id,
     string Bio,
     string Avatar,
     bool IsAdmin,
-    IEnumerable<Skill> Skills);
+    IEnumerable<SkillDto> Skills);

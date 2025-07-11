@@ -6,6 +6,8 @@ using GrowSphere.Core;
 using GrowSphere.Domain;
 using GrowSphere.Domain.Models.ProjectModel;
 using GrowSphere.Domain.Models.Share;
+using GrowSphere.Application.Mappers;
+using System.Linq;
 
 namespace GrowSphere.Application.Projects;
 
@@ -36,10 +38,10 @@ public class ProjectService
         CancellationToken cancellationToken)
     {
         var userId = _currentUserService.UserId;
-        if (userId == Guid.Empty)
-            return Errors.General.Unauthorized();
+        if (userId == null)
+            return Result.Failure<Guid, Error>(Errors.General.Unauthorized());
         
-        var user = await _userRepository.GetById(userId, cancellationToken);
+        var user = await _userRepository.GetById(userId.Value, cancellationToken);
         if (user.IsFailure)
             return user.Error;
         
@@ -169,7 +171,8 @@ public class ProjectService
         if(projects.IsFailure)
             return projects.Error;
         
-        return projects.Value.ToList();
+        var dtos = projects.Value.Select(ProjectMapper.ToProjectWithCategoryDto).ToList();
+        return dtos;
     }
 
     public async Task<Result<ProjectDto, Error>> GetById(Guid projectId, CancellationToken cancellationToken)
@@ -195,18 +198,7 @@ public class ProjectService
             }
         }
         
-        return new ProjectDto
-        {
-            Id = project.Id.Value,
-            Title = project.Title.Value,
-            Description = project.Description.Value,
-            Status = project.Status.Value,
-            StartDate = project.StartDate,
-            EndDate = project.EndDate,
-            CreationDate = project.CreationDate,
-            CategoryName = categoryName,
-            Members = members.Value.ToList()
-        };
+        return ProjectMapper.ToProjectDto(project, categoryName, members.Value);
     }
     
     public async Task<Result<IEnumerable<Project>, Error>> GetByUserId(Guid id,
@@ -223,13 +215,13 @@ public class ProjectService
     public async Task<Result<IEnumerable<ProjectListItemDto>, Error>> GetAllTitlesByUserId(Guid userId,
         CancellationToken cancellationToken)
     {
-        var projects = await _projectRepository.
-            GetAllTitlesByUserId(userId, cancellationToken);
+        var projects = await _projectRepository.GetAllTitlesByUserId(userId, cancellationToken);
         
         if(projects.IsFailure)
             return projects.Error;
         
-        return projects.Value.ToList();
+        var dtos = projects.Value.Select(ProjectMapper.ToProjectListItemDto).ToList();
+        return dtos;
     }
 
     public async Task<Result<IEnumerable<ProjectMemberDto>, Error>> GetMembers(Guid projectId, CancellationToken cancellationToken)
@@ -238,7 +230,7 @@ public class ProjectService
         if(members.IsFailure)
             return members.Error;
         
-        return members.Value.ToList();
+        return members.Value.Select(ProjectMemberMapper.ToProjectMemberDto).ToList();
     }
     
 }
