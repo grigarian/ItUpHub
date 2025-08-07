@@ -16,7 +16,7 @@ public enum ProjectVacancyStatus
 
 public class ProjectVacancy
 {
-    private readonly List<ProjectVacancySkill> _skills = new();
+    private readonly List<Skill> _skills = new();
     private readonly List<VacancyApplication> _vacancyApplications = new();
 
     private ProjectVacancy() { }
@@ -25,7 +25,7 @@ public class ProjectVacancy
     public ProjectId ProjectId { get; private set; }
     public Title Title { get; private set; }
     public Description Description { get; private set; }
-    public IReadOnlyCollection<ProjectVacancySkill> Skills => _skills;
+    public IReadOnlyCollection<Skill> Skills => _skills.AsReadOnly();
     public IReadOnlyCollection<VacancyApplication> VacancyApplications => _vacancyApplications.AsReadOnly();
     public Project Project { get; private set; }
     public ProjectVacancyStatus Status { get; private set; } = ProjectVacancyStatus.Open;
@@ -50,15 +50,6 @@ public class ProjectVacancy
         };
 
         return vacancy;
-    }
-    
-    public Result AddSkill(SkillId skillId)
-    {
-        if (_skills.Any(s => s.SkillId == skillId))
-            return Result.Failure("Skill already added");
-
-        _skills.Add(new ProjectVacancySkill(Id, skillId));
-        return Result.Success();
     }
 
     public void Close() => Status = ProjectVacancyStatus.Closed;

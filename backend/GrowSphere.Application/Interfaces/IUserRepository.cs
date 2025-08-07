@@ -14,10 +14,6 @@ public interface IUserRepository
     Task<Result<User,Error>> GetById(Guid id, CancellationToken cancellationToken);
     
     Task<Result<User, Error>> GetByEmail(string email);
-    
-    Task<Result<Guid, Error>> RemoveSkill(UserId userId, SkillId skillId,ISkillRepository skillRepository ,CancellationToken cancellationToken);
-    
-    Task<Result<Guid, Error>> RemoveProject(UserId userId, ProjectId projectId,CancellationToken cancellationToken);
 
     Task<Result<IEnumerable<User>, Error>> GetAll(CancellationToken cancellationToken);
 }

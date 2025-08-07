@@ -21,6 +21,16 @@ public class ProjectVacancyRepository : IProjectVacancyRepository
             .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
     }
 
+    public async Task<ProjectVacancy?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.ProjectVacancies
+            .Include(v => v.Skills)
+            .Include(v => v.Project)
+            .Include(v => v.VacancyApplications)
+                .ThenInclude(a => a.User)
+            .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
+    }
+
     public async Task<Result> AddAsync(ProjectVacancy vacancy, CancellationToken cancellationToken = default)
     {
         await _context.ProjectVacancies.AddAsync(vacancy, cancellationToken);
@@ -31,9 +41,20 @@ public class ProjectVacancyRepository : IProjectVacancyRepository
     {
         var vacancies = await _context.ProjectVacancies
             .Include(v => v.Skills)
-            .ThenInclude(pvs => pvs.Skill)
+            .Include(v => v.Project)
+            .Include(v => v.VacancyApplications)
             .ToListAsync(cancellationToken);
         
         return vacancies;
+    }
+
+    public async Task<List<ProjectVacancy>> GetByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default)
+    {
+        return await _context.ProjectVacancies
+            .Include(v => v.Skills)
+            .Include(v => v.Project)
+            .Include(v => v.VacancyApplications)
+            .Where(v => v.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
     }
 }

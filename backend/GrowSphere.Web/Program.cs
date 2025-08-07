@@ -90,7 +90,9 @@ builder.Services.AddScoped<IIssueRepository, IssueRepository>();
 builder.Services.AddScoped<IssueService>();
 builder.Services.AddScoped<IProjectVacancyRepository, ProjectVacancyRepository>();
 builder.Services.AddScoped<IVacancyApplicationRepository, VacancyApplicationRepository>();
-builder.Services.AddScoped<ProjectVacancyService>();
+builder.Services.AddScoped<VacancyManagementService>();
+builder.Services.AddScoped<ApplicationManagementService>();
+builder.Services.AddScoped<VacancyDataMappingService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<UserProjectService>();
 builder.Services.AddScoped<UserSkillService>();
@@ -113,6 +115,7 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                 "http://localhost:3000",
+                 "http://localhost:5173",
                  "http://localhost:8080",
                   "http://localhost:8081",
                   "http://localhost:8090",

@@ -63,13 +63,6 @@ namespace GrowSphere.Infrastructure.Configuration
                 .WithOne(us => us.User)
                 .HasForeignKey(us => us.UserId)
                 .IsRequired(false);
-
-            builder.ComplexProperty(u => u.UserStatus, us =>
-            {
-                us.Property(p => p.Value)
-                    .IsRequired(false)
-                    .HasColumnName("status");
-            });
             
             builder.Property(u => u.CreatedDate)
                 .IsRequired()

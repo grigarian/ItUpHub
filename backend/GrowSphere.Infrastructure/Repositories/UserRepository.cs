@@ -54,67 +54,6 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<Result<Guid, Error>> RemoveSkill
-    (
-        UserId userId,
-        SkillId skillId,
-        [FromServices] ISkillRepository skillRepository,
-        CancellationToken cancellationToken
-    )
-    {
-        var userResult = await GetById(userId.Value, cancellationToken);
-
-        if (userResult.IsFailure)
-            return userResult.Error;
-        
-        var user = userResult.Value;
-        
-        var userSkills = await skillRepository.GetSkillsByUserIdAsync(userId.Value, cancellationToken);
-
-        var skill = userSkills.Value.FirstOrDefault(s => s.Id.Value == skillId.Value);
-
-        if (skill is null)
-            return Errors.General.NotFound(skillId);
-
-        var userSkill =  UserSkill.Create(userId, skillId);
-
-        user.RemoveSkill(userSkill.Value);
-
-        _context.UserSkills.Remove(userSkill.Value); // явно удаляем
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return userSkill.Value.SkillId.Value;
-    }
-
-    public async Task<Result<Guid, Error>> RemoveProject
-    (
-        UserId userId,
-        ProjectId projectId,
-        CancellationToken cancellationToken
-    )
-    {
-        var userResult = await GetById(userId.Value, cancellationToken);
-
-        if (userResult.IsFailure)
-            return userResult.Error;
-        
-        var user = userResult.Value;
-
-        var userProject =  user.Projects.FirstOrDefault(p => p.ProjectId == projectId);
-
-        if (userProject is null)
-            return Errors.General.NotFound(projectId);
-
-        user.RemoveProject(userProject);
-
-        _context.UserProjects.Remove(userProject); // явно удаляем
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return userProject.ProjectId.Value;
-    }
-
     public async Task<Result<IEnumerable<User>, Error>> GetAll(CancellationToken cancellationToken)
     {
         var users = await _context.Users

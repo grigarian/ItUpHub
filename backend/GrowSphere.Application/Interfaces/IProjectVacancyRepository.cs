@@ -9,4 +9,6 @@ public interface IProjectVacancyRepository
     Task<Result> AddAsync(ProjectVacancy vacancy, CancellationToken cancellationToken = default);
     
     Task<List<ProjectVacancy>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<List<ProjectVacancy>> GetByProjectIdAsync(Guid projectId, CancellationToken cancellationToken = default);
+    Task<ProjectVacancy?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
 }

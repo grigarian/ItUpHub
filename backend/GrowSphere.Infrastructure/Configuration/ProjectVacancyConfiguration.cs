@@ -31,10 +31,9 @@ public class ProjectVacancyConfiguration: IEntityTypeConfiguration<ProjectVacanc
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
-        builder.HasMany(x => x.Skills)
-            .WithOne()
-            .HasForeignKey(x => x.ProjectVacancyId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(x => x.Skills)
+            .WithMany();
         
         builder.HasMany(v => v.VacancyApplications)
             .WithOne(va => va.ProjectVacancy)
@@ -44,7 +43,9 @@ public class ProjectVacancyConfiguration: IEntityTypeConfiguration<ProjectVacanc
         builder.Property(p => p.ProjectId)
             .HasConversion(
                 id => id.Value,
-                value => ProjectId.Create(value));
+                value => ProjectId.Create(value))
+            .HasColumnName("ProjectId")
+            .IsRequired();
         
         builder.HasOne(v => v.Project)
             .WithMany(p => p.Vacancies)

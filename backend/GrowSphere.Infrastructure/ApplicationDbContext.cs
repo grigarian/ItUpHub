@@ -40,8 +40,6 @@ public class ApplicationDbContext(IConfiguration configuration) :DbContext
     public DbSet<VacancyApplication> VacancyApplications => Set<VacancyApplication>();
     
     public DbSet<ProjectVacancy> ProjectVacancies => Set<ProjectVacancy>();
-    
-    public DbSet<ProjectVacancySkill> ProjectVacancySkills => Set<ProjectVacancySkill>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

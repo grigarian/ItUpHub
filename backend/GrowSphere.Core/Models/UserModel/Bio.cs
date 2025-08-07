@@ -15,6 +15,9 @@ namespace GrowSphere.Domain.Models.UserModel
 
         public static Result<Bio, Error> Create(string value)
         {
+            if (string.IsNullOrWhiteSpace(value))
+                return Errors.General.ValueIsRequired("Bio");
+            
             if(value.Length > BIO_MAX_LENGTH)
                 return Errors.General.ValueIsInvalid("Bio");
             

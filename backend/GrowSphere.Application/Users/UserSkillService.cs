@@ -49,13 +49,35 @@ public class UserSkillService
     public async Task<Result<Guid, Error>> RemoveSkill(
         Guid userId,
         Guid skillId,
-        [FromServices] ISkillRepository skillRepository,
         CancellationToken cancellationToken)
     {
         var userIdObj = UserId.Create(userId);
         var skillIdObj = SkillId.Create(skillId);
+        
         if (userIdObj.Value == Guid.Empty || skillIdObj.Value == Guid.Empty)
             return Errors.General.NotFound();
-        return await _userRepository.RemoveSkill(userIdObj, skillIdObj, skillRepository, cancellationToken);
+
+        // Получаем пользователя
+        var userResult = await _userRepository.GetById(userId, cancellationToken);
+        if (userResult.IsFailure)
+            return userResult.Error;
+        
+        var user = userResult.Value;
+        
+        // Проверяем, есть ли у пользователя этот навык
+        var userSkills = await _skillRepository.GetSkillsByUserIdAsync(userId, cancellationToken);
+        var skill = userSkills.Value.FirstOrDefault(s => s.Id.Value == skillId);
+        
+        if (skill is null)
+            return Errors.General.NotFound(skillId);
+
+        // Создаем связь UserSkill и удаляем её из пользователя
+        var userSkill = UserSkill.Create(userIdObj, skillIdObj);
+        user.RemoveSkill(userSkill.Value);
+
+        // Сохраняем изменения
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return userSkill.Value.SkillId.Value;
     }
 } 

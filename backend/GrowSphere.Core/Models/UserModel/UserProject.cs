@@ -6,11 +6,11 @@ namespace GrowSphere.Domain.Models.UserModel;
 
 public class UserProject
 {
-    public UserId UserId { get; set; }
-    public User User { get; set; }
+    public UserId UserId { get; private set; }
+    public User User { get; private set; }
     
-    public ProjectId ProjectId { get; set; }
-    public Project Project { get; set; }
+    public ProjectId ProjectId { get; private set; }
+    public Project Project { get; private set; }
 
     public UserProject(){}
 

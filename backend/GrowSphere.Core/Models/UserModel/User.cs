@@ -29,8 +29,6 @@ namespace GrowSphere.Domain.Models.UserModel
 
         public Bio Bio { get; private set; }
 
-        public UserStatus UserStatus { get; private set; } = UserModel.UserStatus.Online;
-
         public DateTime CreatedDate { get; private set; } = DateTime.UtcNow;
 
         public bool IsAdmin { get; private set; } = false;
@@ -56,8 +54,11 @@ namespace GrowSphere.Domain.Models.UserModel
             if (_skills.Any(us => us.SkillId == skill.Id))
                 return;
 
-            var userSkill = UserSkill.Create(this.Id, skill.Id);
-            _skills.Add(userSkill.Value);
+            var userSkillResult = UserSkill.Create(this.Id, skill.Id);
+            if (userSkillResult.IsSuccess)
+            {
+                _skills.Add(userSkillResult.Value);
+            }
         }
 
         public void RemoveSkill(UserSkill skill)
@@ -73,8 +74,11 @@ namespace GrowSphere.Domain.Models.UserModel
             if (_projects.Any(up => up.ProjectId == project.Id))
                 return;
 
-            var userProject = UserProject.Create(this.Id, project.Id);
-            _projects.Add(userProject.Value);
+            var userProjectResult = UserProject.Create(this.Id, project.Id);
+            if (userProjectResult.IsSuccess)
+            {
+                _projects.Add(userProjectResult.Value);
+            }
         }
 
         public void RemoveProject(UserProject userProject)
@@ -97,7 +101,6 @@ namespace GrowSphere.Domain.Models.UserModel
             Picture? profilePicture
             ) : base(id)
         {
-            Id = id;
             Name = name;
             Email = email;
             PasswordHash = password;

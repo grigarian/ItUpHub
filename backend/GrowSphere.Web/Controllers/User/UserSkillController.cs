@@ -41,7 +41,7 @@ public class UserSkillController : ControllerBase
     {
         if (_currentUserService.UserId != userId)
             return Forbid();
-        var result = await _userService.RemoveSkill(userId, skillId, _skillRepository, cancellationToken);
+        var result = await _userService.RemoveSkill(userId, skillId, cancellationToken);
         if(result.IsFailure)
             return result.Error.ToResponse();
         return Ok(result.Value);

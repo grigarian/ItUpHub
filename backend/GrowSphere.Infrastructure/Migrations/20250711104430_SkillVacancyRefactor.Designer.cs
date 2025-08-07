@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GrowSphere.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250601072209_UpdateVacancySkill")]
-    partial class UpdateVacancySkill
+    [Migration("20250711104430_SkillVacancyRefactor")]
+    partial class SkillVacancyRefactor
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,46 +133,6 @@ namespace GrowSphere.Infrastructure.Migrations
                         .HasDatabaseName("iX_issue_project_id");
 
                     b.ToTable("issue", (string)null);
-                });
-
-            modelBuilder.Entity("GrowSphere.Domain.Models.JoinRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("ManagerComment")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("manager_comment");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("message");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("project_id");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("status");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pK_join_requests");
-
-                    b.ToTable("join_requests", (string)null);
                 });
 
             modelBuilder.Entity("GrowSphere.Domain.Models.NotificationModel.Notification", b =>
@@ -350,6 +310,10 @@ namespace GrowSphere.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("projectId");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
                     b.ComplexProperty<Dictionary<string, object>>("Description", "GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy.Description#Description", b1 =>
                         {
                             b1.IsRequired();
@@ -375,33 +339,10 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pK_projectVacancies");
 
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("iX_projectVacancies_projectId");
+
                     b.ToTable("projectVacancies", (string)null);
-                });
-
-            modelBuilder.Entity("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancySkill", b =>
-                {
-                    b.Property<Guid>("ProjectVacancyId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("projectVacancyId");
-
-                    b.Property<Guid>("SkillId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("skillId");
-
-                    b.Property<Guid>("ProjectVacancyId1")
-                        .HasColumnType("uuid")
-                        .HasColumnName("projectVacancyId1");
-
-                    b.HasKey("ProjectVacancyId", "SkillId")
-                        .HasName("pK_projectVacancySkills");
-
-                    b.HasIndex("ProjectVacancyId1")
-                        .HasDatabaseName("iX_projectVacancySkills_projectVacancyId1");
-
-                    b.HasIndex("SkillId")
-                        .HasDatabaseName("iX_projectVacancySkills_skillId");
-
-                    b.ToTable("projectVacancySkills", (string)null);
                 });
 
             modelBuilder.Entity("GrowSphere.Domain.Models.ProjectVacancyModel.VacancyApplication", b =>
@@ -445,6 +386,10 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.HasIndex("ProjectVacancyId")
                         .HasDatabaseName("iX_vacancyApplications_projectVacancyId");
 
+                    b.HasIndex("UserId", "ProjectVacancyId")
+                        .IsUnique()
+                        .HasDatabaseName("iX_vacancyApplications_userId_projectVacancyId");
+
                     b.ToTable("vacancyApplications", (string)null);
                 });
 
@@ -480,6 +425,12 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<bool>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_admin");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -583,6 +534,25 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.ToTable("user_skill", (string)null);
                 });
 
+            modelBuilder.Entity("ProjectVacancySkill", b =>
+                {
+                    b.Property<Guid>("ProjectVacancyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("projectVacancyId");
+
+                    b.Property<Guid>("SkillsId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("skillsId");
+
+                    b.HasKey("ProjectVacancyId", "SkillsId")
+                        .HasName("pK_projectVacancySkill");
+
+                    b.HasIndex("SkillsId")
+                        .HasDatabaseName("iX_projectVacancySkill_skillsId");
+
+                    b.ToTable("projectVacancySkill", (string)null);
+                });
+
             modelBuilder.Entity("GrowSphere.Domain.Models.IssueModel.Issue", b =>
                 {
                     b.HasOne("GrowSphere.Domain.Models.UserModel.User", "AssignedUser")
@@ -673,42 +643,37 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancySkill", b =>
+            modelBuilder.Entity("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", b =>
                 {
-                    b.HasOne("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", null)
-                        .WithMany("Skills")
-                        .HasForeignKey("ProjectVacancyId")
+                    b.HasOne("GrowSphere.Domain.Models.ProjectModel.Project", "Project")
+                        .WithMany("Vacancies")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fK_projectVacancySkills_projectVacancies_projectVacancyId");
+                        .HasConstraintName("fK_projectVacancies_project_projectId");
 
-                    b.HasOne("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", "ProjectVacancy")
-                        .WithMany()
-                        .HasForeignKey("ProjectVacancyId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fK_projectVacancySkills_projectVacancies_projectVacancyId1");
-
-                    b.HasOne("GrowSphere.Domain.Models.SkillModel.Skill", "Skill")
-                        .WithMany()
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fK_projectVacancySkills_skill_skillId");
-
-                    b.Navigation("ProjectVacancy");
-
-                    b.Navigation("Skill");
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("GrowSphere.Domain.Models.ProjectVacancyModel.VacancyApplication", b =>
                 {
-                    b.HasOne("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", null)
-                        .WithMany()
+                    b.HasOne("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", "ProjectVacancy")
+                        .WithMany("VacancyApplications")
                         .HasForeignKey("ProjectVacancyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fK_vacancyApplications_projectVacancies_projectVacancyId");
+
+                    b.HasOne("GrowSphere.Domain.Models.UserModel.User", "User")
+                        .WithMany("VacancyApplications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fK_vacancyApplications_user_userId");
+
+                    b.Navigation("ProjectVacancy");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GrowSphere.Domain.Models.UserModel.UserProject", b =>
@@ -749,6 +714,23 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ProjectVacancySkill", b =>
+                {
+                    b.HasOne("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectVacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fK_projectVacancySkill_projectVacancies_projectVacancyId");
+
+                    b.HasOne("GrowSphere.Domain.Models.SkillModel.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("SkillsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fK_projectVacancySkill_skill_skillsId");
+                });
+
             modelBuilder.Entity("GrowSphere.Domain.Models.CategoryModel.Category", b =>
                 {
                     b.Navigation("Projects");
@@ -759,11 +741,13 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.Navigation("Issues");
 
                     b.Navigation("Members");
+
+                    b.Navigation("Vacancies");
                 });
 
             modelBuilder.Entity("GrowSphere.Domain.Models.ProjectVacancyModel.ProjectVacancy", b =>
                 {
-                    b.Navigation("Skills");
+                    b.Navigation("VacancyApplications");
                 });
 
             modelBuilder.Entity("GrowSphere.Domain.Models.UserModel.User", b =>
@@ -771,6 +755,8 @@ namespace GrowSphere.Infrastructure.Migrations
                     b.Navigation("Projects");
 
                     b.Navigation("Skills");
+
+                    b.Navigation("VacancyApplications");
                 });
 #pragma warning restore 612, 618
         }

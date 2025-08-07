@@ -62,19 +62,12 @@ public class SkillRepository : ISkillRepository
         return skills;
     }
     
-    public async Task<List<Skill>> GetSkillsForVacancyAsync(Guid projectVacancyId, CancellationToken cancellationToken = default)
+    
+
+    public async Task<List<Skill>> GetByIds(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
     {
-        // Сначала получаем ID всех скиллов, привязанных к вакансии
-        var skillIds = await _dbContext.ProjectVacancySkills
-            .Where(pvs => pvs.ProjectVacancyId == projectVacancyId)
-            .Select(pvs => pvs.SkillId)
+        return await _dbContext.Skills
+            .Where(s => ids.Contains(s.Id))
             .ToListAsync(cancellationToken);
-
-        // Затем вытаскиваем сами Skill по этим ID
-        var skills = await _dbContext.Skills
-            .Where(s => skillIds.Contains(s.Id))
-            .ToListAsync(cancellationToken);
-
-        return skills;
     }
 }

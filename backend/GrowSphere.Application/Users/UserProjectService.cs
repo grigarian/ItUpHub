@@ -53,6 +53,20 @@ public class UserProjectService
         var projectIdObj = ProjectId.Create(projectId);
         if (userIdObj.Value == Guid.Empty || projectIdObj.Value == Guid.Empty)
             return Errors.General.NotFound();
-        return await _userRepository.RemoveProject(userIdObj, projectIdObj, cancellationToken);
+
+        var userResult = await _userRepository.GetById(userId, cancellationToken);
+        if (userResult.IsFailure)
+            return userResult.Error;
+        var user = userResult.Value;
+
+        var userProject = user.Projects.FirstOrDefault(p => p.ProjectId == projectIdObj);
+        if (userProject is null)
+            return Errors.General.NotFound(projectId);
+
+        user.RemoveProject(userProject);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return userProject.ProjectId.Value;
     }
 } 

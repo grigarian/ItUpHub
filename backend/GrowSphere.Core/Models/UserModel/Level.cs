@@ -7,9 +7,9 @@ namespace GrowSphere.Domain.Models.UserModel
     {
         public static readonly Level Low = new(nameof(Low));
         public static readonly Level Medium = new(nameof(Medium));
-        public static readonly Level Hight = new(nameof(Hight));
+        public static readonly Level High = new(nameof(High));
 
-        private static readonly Level[] _all = { Low, Medium, Hight };
+        private static readonly Level[] _all = { Low, Medium, High };
 
         public string Value { get; }
 

@@ -39,7 +39,7 @@ public class ProjectService
     {
         var userId = _currentUserService.UserId;
         if (userId == null)
-            return Result.Failure<Guid, Error>(Errors.General.Unauthorized());
+            return Errors.General.Unauthorized();
         
         var user = await _userRepository.GetById(userId.Value, cancellationToken);
         if (user.IsFailure)
@@ -154,14 +154,16 @@ public class ProjectService
         
     }
 
-    public async Task<Result<IEnumerable<Project>, Error>> GetAll(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAll(CancellationToken cancellationToken)
     {
         var projects = await _projectRepository.GetAll(cancellationToken);
         
         if(projects.IsFailure)
             return projects.Error;
-        
-        return projects.Value.ToList();
+        //Попправить возвращаемый тип
+        var dtos = projects.Value.Select(ProjectMapper.ToProjectWithCategoryDto).ToList();
+        Console.WriteLine(dtos.Count);
+        return dtos;
     }
 
     public async Task<Result<IEnumerable<ProjectWithCategoryDto>, Error>> GetAllWithCategories(CancellationToken cancellationToken)

@@ -15,9 +15,10 @@ namespace GrowSphere.Domain.Models.UserModel
 
         public static Result<Email, Error> Create(string value)
         {
-            if (!Regex.IsMatch(value, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
-                return Errors.General.ValueIsInvalid("email");
             if (string.IsNullOrWhiteSpace(value))
+                return Errors.General.ValueIsInvalid("email");
+                
+            if (!Regex.IsMatch(value, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
                 return Errors.General.ValueIsInvalid("email");
 
             return new Email(value);

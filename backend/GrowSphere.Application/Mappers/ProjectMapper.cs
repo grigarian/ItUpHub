@@ -22,9 +22,13 @@ public static class ProjectMapper
         };
 
     public static ProjectListItemDto ToProjectListItemDto(Project project) =>
-        new ProjectListItemDto
-        (project.Id.Value, project.Title.Value, project.Description.Value, project.Category.Title.Value);
-            
+        new ProjectListItemDto(
+            project.Id.Value,
+            project.Title.Value,
+            project.Description.Value,
+            project.Category?.Title?.Value
+        );
+
     public static ProjectWithCategoryDto ToProjectWithCategoryDto(Project project) =>
         new ProjectWithCategoryDto(
             project.Id.Value,
@@ -36,5 +40,5 @@ public static class ProjectMapper
             project.EndDate,
             project.CreationDate
         );
-        
-} 
+
+}
